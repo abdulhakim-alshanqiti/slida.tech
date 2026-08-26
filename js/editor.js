@@ -72,7 +72,7 @@ async function init() {
 
   // app.js calls this when the user switches to a different file in
   // the filesystem, to load that file's markdown into the editor.
-  window.slida.techEditor = editor;
+  window.slida_techEditor = editor;
   window.setEditorMarkdown = (markdown) => {
     try {
       editor.commands.setContent(markdown || "", true);
