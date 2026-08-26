@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manuscript — Markdown Slide Maker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Arabic:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/app.css" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <span class="mark">✦</span> Manuscript
+        <span class="sub" data-i18n="brand.sub">markdown → reveal.js</span>
+      </div>
+      <div class="toolbar">
+        <button
+          id="btn-md"
+          data-i18n="toolbar.downloadMd"
+          data-i18n-title="toolbar.downloadMdTitle"
+          title="Download markdown source"
+        >
+          ↓ .md
+        </button>
+        <button
+          id="btn-html"
+          data-i18n="toolbar.downloadHtml"
+          data-i18n-title="toolbar.downloadHtmlTitle"
+          title="Download standalone presentation"
+        >
+          ↓ .html
+        </button>
+        <button
+          id="btn-theme"
+          data-i18n="toolbar.theme"
+          data-i18n-title="toolbar.themeTitle"
+          title="Edit or replace the Reveal.js theme CSS"
+        >
+          🎨 Theme CSS
+        </button>
+        <button
+          id="btn-present"
+          class="primary"
+          data-i18n="toolbar.present"
+          data-i18n-title="toolbar.presentTitle"
+          title="Present fullscreen"
+        >
+          ▶ Present
+        </button>
+        <div class="divider"></div>
+        <button
+          id="btn-lang"
+          data-i18n="toolbar.lang"
+          data-i18n-title="toolbar.langTitle"
+          title="Switch language"
+        >
+          🌐 العربية
+        </button>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <div class="pane pane-editor">
+        <div class="pane-head">
+          <span data-i18n="pane.editor">Editor</span>
+          <span class="status" id="status-editor">0 words</span>
+        </div>
+        <div class="file-bar">
+          <div class="file-list" id="file-list"></div>
+          <button
+            id="btn-new-file"
+            class="file-new"
+            data-i18n="file.new"
+            data-i18n-title="file.newTitle"
+            title="New file"
+          >
+            ＋ File
+          </button>
+        </div>
+        <div class="editor-toolbar" id="editor-toolbar">
+          <button
+            data-cmd="h1"
+            data-i18n="editorToolbar.h1"
+            data-i18n-title="editorToolbar.h1Title"
+            title="Heading 1"
+          >
+            H1
+          </button>
+          <button
+            data-cmd="h2"
+            data-i18n="editorToolbar.h2"
+            data-i18n-title="editorToolbar.h2Title"
+            title="Heading 2"
+          >
+            H2
+          </button>
+          <button
+            data-cmd="h3"
+            data-i18n="editorToolbar.h3"
+            data-i18n-title="editorToolbar.h3Title"
+            title="Heading 3"
+          >
+            H3
+          </button>
+          <div class="tb-divider"></div>
+          <button
+            data-cmd="bold"
+            data-i18n-title="editorToolbar.boldTitle"
+            title="Bold (Ctrl+B)"
+          >
+            <strong data-i18n="editorToolbar.bold">B</strong>
+          </button>
+          <button
+            data-cmd="italic"
+            data-i18n-title="editorToolbar.italicTitle"
+            title="Italic (Ctrl+I)"
+          >
+            <em data-i18n="editorToolbar.italic">I</em>
+          </button>
+          <button
+            data-cmd="strike"
+            data-i18n-title="editorToolbar.strikeTitle"
+            title="Strikethrough"
+          >
+            <s data-i18n="editorToolbar.strike">S</s>
+          </button>
+          <button
+            data-cmd="code"
+            data-i18n="editorToolbar.code"
+            data-i18n-title="editorToolbar.codeTitle"
+            title="Inline code"
+          >
+            { }
+          </button>
+          <div class="tb-divider"></div>
+          <button
+            data-cmd="bulletList"
+            data-i18n="editorToolbar.bulletList"
+            data-i18n-title="editorToolbar.bulletListTitle"
+            title="Bullet list"
+          >
+            • List
+          </button>
+          <button
+            data-cmd="orderedList"
+            data-i18n="editorToolbar.orderedList"
+            data-i18n-title="editorToolbar.orderedListTitle"
+            title="Numbered list"
+          >
+            1. List
+          </button>
+          <button
+            data-cmd="blockquote"
+            data-i18n="editorToolbar.blockquote"
+            data-i18n-title="editorToolbar.blockquoteTitle"
+            title="Quote"
+          >
+            " "
+          </button>
+          <button
+            data-cmd="link"
+            data-i18n="editorToolbar.link"
+            data-i18n-title="editorToolbar.linkTitle"
+            title="Link"
+          >
+            🔗
+          </button>
+          <div class="tb-divider"></div>
+          <button
+            data-cmd="hslide"
+            data-i18n="editorToolbar.hslide"
+            data-i18n-title="editorToolbar.hslideTitle"
+            title="New slide (horizontal rule)"
+          >
+            ＋ Slide
+          </button>
+          <button
+            data-cmd="vslide"
+            data-i18n="editorToolbar.vslide"
+            data-i18n-title="editorToolbar.vslideTitle"
+            title="New vertical slide"
+          >
+            ＋ Sub-slide
+          </button>
+          <button
+            data-cmd="quiz"
+            data-i18n="editorToolbar.quiz"
+            data-i18n-title="editorToolbar.quizTitle"
+            title="Insert an interactive quiz block"
+          >
+            ◆ Quiz
+          </button>
+          <button
+            data-cmd="diagram"
+            data-i18n="editorToolbar.diagram"
+            data-i18n-title="editorToolbar.diagramTitle"
+            title="Insert an interactive diagram block"
+          >
+            ◆ Diagram
+          </button>
+          <div class="tb-divider"></div>
+          <button
+            data-cmd="undo"
+            data-i18n="editorToolbar.undo"
+            data-i18n-title="editorToolbar.undoTitle"
+            title="Undo"
+          >
+            ↺
+          </button>
+          <button
+            data-cmd="redo"
+            data-i18n="editorToolbar.redo"
+            data-i18n-title="editorToolbar.redoTitle"
+            title="Redo"
+          >
+            ↻
+          </button>
+        </div>
+        <div class="editor-scroll">
+          <div id="editor-root"></div>
+        </div>
+      </div>
+      <div class="pane pane-preview">
+        <div class="pane-head">
+          <span data-i18n="pane.preview">Preview</span>
+          <span class="status stage" id="status-preview">1 / 1</span>
+        </div>
+        <div class="preview-frame-wrap">
+          <iframe
+            id="deck"
+            data-i18n-title="misc.slidePreviewTitle"
+            title="Slide preview"
+          ></iframe>
+        </div>
+        <div class="dots" id="dots"></div>
+      </div>
+    </div>
+
+    <div class="theme-modal" id="theme-modal" aria-hidden="true">
+      <div
+        class="theme-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="theme-title"
+      >
+        <div class="theme-panel-head">
+          <div>
+            <div
+              class="theme-panel-title"
+              id="theme-title"
+              data-i18n="theme.title"
+            >
+              Reveal.js Theme CSS
+            </div>
+            <div class="theme-panel-subtitle" data-i18n="theme.subtitle">
+              Edit the CSS live, import another .css file, or export your
+              current theme.
+            </div>
+          </div>
+          <div class="theme-actions">
+            <button
+              id="btn-theme-import"
+              data-i18n="theme.import"
+              data-i18n-title="theme.importTitle"
+              title="Replace the theme with a CSS file"
+            >
+              ↑ Replace CSS
+            </button>
+            <button
+              id="btn-theme-download"
+              data-i18n="theme.download"
+              data-i18n-title="theme.downloadTitle"
+              title="Download the current theme CSS"
+            >
+              ↓ Save CSS
+            </button>
+            <button
+              id="btn-theme-reset"
+              data-i18n="theme.reset"
+              data-i18n-title="theme.resetTitle"
+              title="Restore the default theme"
+            >
+              Reset
+            </button>
+            <button
+              id="btn-theme-close"
+              data-i18n="theme.close"
+              data-i18n-title="theme.closeTitle"
+              title="Close theme editor"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+        <textarea
+          id="theme-editor"
+          class="theme-editor"
+          spellcheck="false"
+        ></textarea>
+        <div class="theme-panel-foot">
+          <span id="theme-status" data-i18n="theme.footHint"
+            >Changes apply automatically.</span
+          >
+          <span data-i18n="theme.footShortcut">Ctrl+S downloads the CSS</span>
+        </div>
+      </div>
+      <input
+        id="theme-file-input"
+        class="theme-file-input"
+        type="file"
+        accept=".css,text/css"
+      />
+    </div>
+
+    <script type="module" src="./js/i18n.js"></script>
+    <script type="module" src="./js/app.js"></script>
+    <script type="module" src="./js/editor.js"></script>
+  </body>
+</html>
