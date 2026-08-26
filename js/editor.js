@@ -5,7 +5,7 @@ import CodeBlockLowlight from "https://esm.sh/@tiptap/extension-code-block-lowli
 import { createLowlight, common } from "https://esm.sh/lowlight";
 import { Markdown } from "https://esm.sh/tiptap-markdown";
 import { t, i18nReady, onChange as onLangChange } from "./i18n.js";
-import { HTMLRendererNode } from './HTMLRendererNode.js';
+import { HTMLRendererNode } from "./HTMLRendererNode.js";
 
 const root = document.getElementById("editor-root");
 const toolbar = document.getElementById("editor-toolbar");
@@ -72,7 +72,7 @@ async function init() {
 
   // app.js calls this when the user switches to a different file in
   // the filesystem, to load that file's markdown into the editor.
-  window.manuscriptEditor = editor;
+  window.slida.techEditor = editor;
   window.setEditorMarkdown = (markdown) => {
     try {
       editor.commands.setContent(markdown || "", true);
@@ -90,9 +90,12 @@ async function init() {
         else if (cmd === "italic") active = editor.isActive("italic");
         else if (cmd === "strike") active = editor.isActive("strike");
         else if (cmd === "code") active = editor.isActive("code");
-        else if (cmd === "h1") active = editor.isActive("heading", { level: 1 });
-        else if (cmd === "h2") active = editor.isActive("heading", { level: 2 });
-        else if (cmd === "h3") active = editor.isActive("heading", { level: 3 });
+        else if (cmd === "h1")
+          active = editor.isActive("heading", { level: 1 });
+        else if (cmd === "h2")
+          active = editor.isActive("heading", { level: 2 });
+        else if (cmd === "h3")
+          active = editor.isActive("heading", { level: 3 });
         else if (cmd === "bulletList") active = editor.isActive("bulletList");
         else if (cmd === "orderedList") active = editor.isActive("orderedList");
         else if (cmd === "blockquote") active = editor.isActive("blockquote");

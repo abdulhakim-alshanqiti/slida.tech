@@ -1,4 +1,4 @@
-// IndexedDB layer for Manuscript.
+// IndexedDB layer for slida.tech.
 //
 // Two stores live in the same database:
 //  - "files"  the multi-file filesystem: { id, name, content, createdAt, updatedAt }
@@ -6,12 +6,12 @@
 //             Kept only so an existing user's one saved document can be
 //             migrated into "files" on first load after the update.
 
-const IDB_NAME = "manuscript-db";
+const IDB_NAME = "slida.tech-db";
 const IDB_VERSION = 2;
 const IDB_STORE = "docs"; // legacy
 const FILES_STORE = "files";
 
-export const IDB_DOC_KEY = "manuscript:doc"; // legacy key
+export const IDB_DOC_KEY = "slida.tech:doc"; // legacy key
 
 let idbPromise = null;
 

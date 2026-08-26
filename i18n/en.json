@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "Manuscript — Markdown Slide Maker"
+    "title": "slida.tech — Markdown Slide Maker"
   },
   "brand": {
     "sub": "markdown → reveal.js"
@@ -32,7 +32,7 @@
     "untitled": "Untitled {n}",
     "renamePrompt": "Rename file",
     "deleteConfirm": "Delete \"{name}\"? This can't be undone.",
-    "deleteLastAlert": "Manuscript needs at least one file — create another before deleting this one.",
+    "deleteLastAlert": "slida.tech needs at least one file — create another before deleting this one.",
     "newSlideContent": "\n## New slide\n\nStart writing…\n"
   },
   "editorToolbar": {

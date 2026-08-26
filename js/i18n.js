@@ -1,4 +1,4 @@
-// Lightweight i18n loader for Manuscript.
+// Lightweight i18n loader for slida.tech.
 //
 // - Loads ./i18n/<lang>.json (en.json / ar.json).
 // - Exposes t(key, vars) for use anywhere in the app (alerts, prompts,
@@ -9,7 +9,7 @@
 //   which already handles its own RTL via reveal-theme.css) when Arabic
 //   is active, and persists the choice in localStorage.
 
-const STORAGE_KEY = "manuscript:lang";
+const STORAGE_KEY = "slida.tech:lang";
 export const SUPPORTED_LANGS = ["en", "ar"];
 const RTL_LANGS = new Set(["ar"]);
 const FALLBACK_LANG = "en";
@@ -26,7 +26,9 @@ function detectInitialLang() {
   } catch (err) {
     /* localStorage unavailable — ignore */
   }
-  const nav = ((navigator.language || "en").split("-")[0] || "en").toLowerCase();
+  const nav = (
+    (navigator.language || "en").split("-")[0] || "en"
+  ).toLowerCase();
   return SUPPORTED_LANGS.includes(nav) ? nav : FALLBACK_LANG;
 }
 
@@ -103,7 +105,10 @@ export async function setLang(lang) {
   } catch (err) {
     /* ignore */
   }
-  dict = lang === FALLBACK_LANG ? fallbackDict : await loadDict(lang).catch(() => fallbackDict);
+  dict =
+    lang === FALLBACK_LANG
+      ? fallbackDict
+      : await loadDict(lang).catch(() => fallbackDict);
   applyDom();
   notify();
 }
@@ -112,7 +117,10 @@ async function initI18n() {
   fallbackDict = await loadDict(FALLBACK_LANG).catch(() => ({}));
   const initial = detectInitialLang();
   currentLang = initial;
-  dict = initial === FALLBACK_LANG ? fallbackDict : await loadDict(initial).catch(() => fallbackDict);
+  dict =
+    initial === FALLBACK_LANG
+      ? fallbackDict
+      : await loadDict(initial).catch(() => fallbackDict);
   applyDom();
   notify();
 }

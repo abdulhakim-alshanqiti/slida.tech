@@ -1,7 +1,7 @@
 import { DEFAULT_THEME_CSS } from "./default-theme.js";
 import { t } from "./i18n.js";
 
-const THEME_STORAGE_KEY = "manuscript:theme-css";
+const THEME_STORAGE_KEY = "slida.tech:theme-css";
 
 /**
  * Wires up the "Theme CSS" modal (edit / import / export / reset) and keeps

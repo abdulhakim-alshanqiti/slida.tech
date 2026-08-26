@@ -8,7 +8,14 @@ import {
 } from "./idb.js";
 import { deckDocument, fixSlideSeparators } from "./deck-builder.js";
 import { createThemeManager } from "./theme.js";
-import { t, i18nReady, getLang, setLang, isRtl, onChange as onLangChange } from "./i18n.js";
+import {
+  t,
+  i18nReady,
+  getLang,
+  setLang,
+  isRtl,
+  onChange as onLangChange,
+} from "./i18n.js";
 
 const iframe = document.getElementById("deck");
 const dotsEl = document.getElementById("dots");
@@ -18,7 +25,7 @@ const fileListEl = document.getElementById("file-list");
 const btnNewFile = document.getElementById("btn-new-file");
 const btnLang = document.getElementById("btn-lang");
 
-const LAST_FILE_KEY = "manuscript:last-file-id";
+const LAST_FILE_KEY = "slida.tech:last-file-id";
 
 let files = []; // in-memory index of every file: {id, name, content, createdAt, updatedAt}
 let currentFileId = null;
@@ -33,12 +40,19 @@ let slideVerticalIndex = 0;
 // against the file we just switched away from (or into, before it settles).
 let switchingFile = false;
 
-const theme = createThemeManager({ onApply: () => renderDeck(currentMarkdown) });
+const theme = createThemeManager({
+  onApply: () => renderDeck(currentMarkdown),
+});
 theme.loadStoredCss();
 
 function genId() {
   if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
-  return "f-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+  return (
+    "f-" +
+    Date.now().toString(36) +
+    "-" +
+    Math.random().toString(36).slice(2, 8)
+  );
 }
 
 function currentFile() {
@@ -174,7 +188,12 @@ document.getElementById("btn-md").addEventListener("click", () => {
 document.getElementById("btn-html").addEventListener("click", () => {
   download(
     baseName() + ".html",
-    deckDocument(currentMarkdown, theme.getCss(), isRtl() ? "rtl" : "ltr", getLang()),
+    deckDocument(
+      currentMarkdown,
+      theme.getCss(),
+      isRtl() ? "rtl" : "ltr",
+      getLang(),
+    ),
     "text/html",
   );
 });
