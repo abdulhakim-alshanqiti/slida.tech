@@ -1,12 +1,17 @@
 # Slida.tech
 
 **Markdown → interactive presentations**
- <video controls src="showcase.mp4" title="Slida.tech"></video> 
+
+https://github.com/user-attachments/assets/dfcc3199-eb5e-4360-8da9-076a4b4bfd79
+
+
 
 
 Slida.tech is a lightweight, browser-based presentation editor for creating interactive slides with **Markdown** and **Reveal.js**.
 
 Write your presentation in Markdown, see the result instantly, customize the Reveal.js theme, and add interactive content such as quizzes, diagrams, charts, and live JavaScript components — all from one workspace.
+
+try the alpha version out now : https://slida-tech.pages.dev/
 
 ## ✨ Features
 
