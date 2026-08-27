@@ -130,7 +130,10 @@ function createMenu() {
     updatePosition(rect) {
       if (!rect) return;
       el.style.left = `${rect.left + window.scrollX}px`;
-      el.style.top = `${rect.bottom + window.scrollY + 4}px`;
+      // Position above the cursor: anchor to rect.top and flip the box
+      // upward via transform, so it grows up regardless of menu height.
+      el.style.top = `${rect.top + window.scrollY - 4}px`;
+      el.style.transform = "translateY(-100%)";
     },
     moveSelection(delta) {
       if (!items.length) return;

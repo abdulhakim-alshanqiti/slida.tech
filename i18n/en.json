@@ -60,7 +60,8 @@
     "vslide": "＋ Sub-slide",
     "vslideTitle": "New vertical slide",
     "codeBlock": "◆ Quiz",
-    "liveBlock": "◆ Diagram"
+    "liveBlock": "◆ liveBlock",
+    "diagram": "◆ Diagram"
   },
   "editor": {
     "placeholder": "Start typing your deck…",

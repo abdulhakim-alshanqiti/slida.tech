@@ -771,6 +771,12 @@ iframe#deck {
 /* =========================================
    RESPONSIVE & RTL
    ========================================= */
+.tiptap-html-renderer-container *,
+.code-editor {
+  direction: ltr !important;
+  text-align: left;
+}
+
 @media (max-width: 820px) {
   .workspace {
     flex-direction: column;

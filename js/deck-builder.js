@@ -21,8 +21,9 @@ function extractLiveBlocks(source) {
 
   // Plain ```live fences: kept for backward compatibility with any
   // hand-authored or previously-saved live blocks. Run as-is.
-  let transformed = source.replace(/```live\r?\n([\s\S]*?)```/g, (match, code) =>
-    consume(code),
+  let transformed = source.replace(
+    /```live\r?\n([\s\S]*?)```/g,
+    (match, code) => consume(code),
   );
 
   // ```htmlrenderer fences: the full round-tripped HTMLRenderer node
@@ -48,7 +49,8 @@ function extractLiveBlocks(source) {
         rendered = renderRenderView(payload.renderView, payload.state);
       } catch (err) {
         rendered = `container.textContent = ${JSON.stringify(
-          "Render View Error: " + (err && err.message ? err.message : String(err)),
+          "Render View Error: " +
+            (err && err.message ? err.message : String(err)),
         )};`;
       }
       return consume(rendered);
@@ -110,13 +112,15 @@ function directionOverrides(dir) {
     .lk-quiz-opt{ text-align:right; }
 */
 
-export function deckDocument(markdownContent, themeCss, dir = "ltr", lang = "en") {
+export function deckDocument(
+  markdownContent,
+  themeCss,
+  dir = "ltr",
+  lang = "en",
+) {
   const { transformed, liveSources } = extractLiveBlocks(markdownContent);
   const esc = transformed.replace(/<\/textarea>/g, "&lt;/textarea&gt;");
-  const sourcesJson = JSON.stringify(liveSources).replace(
-    /</g,
-    "\\u003c",
-  );
+  const sourcesJson = JSON.stringify(liveSources).replace(/</g, "\\u003c");
   return `<!doctype html>
   <html dir="${dir}" lang="${lang}">
   <head>
@@ -157,8 +161,7 @@ export function deckDocument(markdownContent, themeCss, dir = "ltr", lang = "en"
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reveal.js"><\/script>
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/markdown.js"><\/script>
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/highlight.js"><\/script>
-  <script src="https://cdn.jsdelivr.net/npm/d3@7"><\/script>
-  <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"><\/script>
+
   <script>
     // Small helper library available inside every live code block as LiveKit.
     window.LiveKit = {
@@ -251,7 +254,7 @@ export function deckDocument(markdownContent, themeCss, dir = "ltr", lang = "en"
     container: stage,
     LiveKit: window.LiveKit,
     d3: window.d3,
-    echarts: window.echarts
+
   };
 
   const moduleSrc = [
@@ -259,7 +262,6 @@ export function deckDocument(markdownContent, themeCss, dir = "ltr", lang = "en"
     'const container = __ctx.container;',
     'const LiveKit = __ctx.LiveKit;',
     'const d3 = __ctx.d3;',
-    'const echarts = __ctx.echarts;',
     source
   ].join(String.fromCharCode(10));
 
@@ -286,18 +288,6 @@ export function deckDocument(markdownContent, themeCss, dir = "ltr", lang = "en"
       });
     }
 
-    // Auto-resize any ECharts instances created inside live blocks.
-    // ECharts stamps a "_echarts_instance_" attribute on the DOM element it
-    // initializes on, so we can find them all without keeping a registry.
-    function resizeAllCharts(){
-      if(typeof echarts === 'undefined') return;
-      document.querySelectorAll('[_echarts_instance_]').forEach(function(el){
-        try{
-          var inst = echarts.getInstanceByDom(el);
-          if(inst) inst.resize();
-        }catch(e){}
-      });
-    }
 
     const deck = new Reveal({
       hash: false, controls:true, progress:true, center:true,
