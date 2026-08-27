@@ -278,56 +278,30 @@ button.primary:hover {
   color: var(--ink);
 }
 
-/* ---------- Editor Toolbar (Merged) ---------- */
-.editor-toolbar,
-#editor-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-wrap: wrap;
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--paper-line);
-  background: var(--bg-code);
-  flex-shrink: 0;
-}
-
-.editor-toolbar button,
-#editor-toolbar button {
-  font-family: "Inter", sans-serif;
-  font-size: 13px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--ink-soft);
-  padding: 6px 9px;
+/* ---------- Slash Menu ---------- */
+.slash-menu {
+  position: absolute;
+  z-index: 1000;
+  min-width: 180px;
+  background: var(--surface, #1e1e1e);
+  border: 1px solid var(--border, #333);
   border-radius: 6px;
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  display: none;
+  max-height: 260px;
+  overflow-y: auto;
+}
+.slash-menu-item {
+  padding: 6px 10px;
+  border-radius: 4px;
   cursor: pointer;
-  transition:
-    background 0.15s,
-    border-color 0.15s,
-    color 0.15s;
-  white-space: nowrap;
-  min-width: 30px;
+  font-size: 14px;
 }
-
-.editor-toolbar button:hover,
-#editor-toolbar button:hover {
-  background: var(--paper-line);
-  color: var(--ink);
-}
-
-.editor-toolbar button.is-active,
-#editor-toolbar button.is-active {
-  background: var(--amber);
-  border-color: var(--amber);
-  color: #191919;
-}
-
-.editor-toolbar .tb-divider,
-#editor-toolbar .tb-divider {
-  width: 1px;
-  align-self: stretch;
-  background: var(--paper-line);
-  margin: 2px 5px;
+.slash-menu-item.is-selected,
+.slash-menu-item:hover {
+  background: var(--accent, #2d6cdf);
+  color: #fff;
 }
 
 /* =========================================
@@ -820,7 +794,8 @@ iframe#deck {
 [dir="rtl"] .brand,
 [dir="rtl"] .toolbar,
 [dir="rtl"] .file-bar,
-[dir="rtl"] .editor-toolbar,
+[dir="rtl"] .slash-menu,
+[dir="rtl"] .slash-menu-item,
 [dir="rtl"] .pane-head,
 [dir="rtl"] .theme-panel-head,
 [dir="rtl"] .theme-actions,

@@ -35,15 +35,11 @@
     "deleteLastAlert": "slida.tech needs at least one file — create another before deleting this one.",
     "newSlideContent": "\n## New slide\n\nStart writing…\n"
   },
-  "editorToolbar": {
-    "h1": "H1",
-    "h1Title": "Heading 1",
-    "h2": "H2",
-    "h2Title": "Heading 2",
-    "h3": "H3",
-    "h3Title": "Heading 3",
+  "slashMenu": {
+    "h1": "H1 (Heading 1)",
+    "h2": "H2 (Heading 2)",
+    "h3": "H3 (Heading 3)",
     "bold": "B",
-    "boldTitle": "Bold (Ctrl+B)",
     "italic": "I",
     "italicTitle": "Italic (Ctrl+I)",
     "strike": "S",
@@ -63,14 +59,8 @@
     "hslideTitle": "New slide (horizontal rule)",
     "vslide": "＋ Sub-slide",
     "vslideTitle": "New vertical slide",
-    "quiz": "◆ Quiz",
-    "quizTitle": "Insert an interactive quiz block",
-    "diagram": "◆ Diagram",
-    "diagramTitle": "Insert an interactive diagram block",
-    "undo": "↺",
-    "undoTitle": "Undo",
-    "redo": "↻",
-    "redoTitle": "Redo"
+    "codeBlock": "◆ Quiz",
+    "liveBlock": "◆ Diagram"
   },
   "editor": {
     "placeholder": "Start typing your deck…",
