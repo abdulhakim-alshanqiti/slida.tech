@@ -1,6 +1,7 @@
 import { Extension } from "https://esm.sh/@tiptap/core";
 import Suggestion from "https://esm.sh/@tiptap/suggestion";
 import { t } from "./i18n.js";
+import { liveblockExamples } from "./liveblockExamples.js";
 
 function getItems() {
   return [
@@ -84,6 +85,16 @@ function getItems() {
           .insertContent({ type: "htmlRenderer" })
           .run(),
     },
+    ...liveblockExamples.map((ex) => ({
+      title: ex.title,
+      command: ({ editor, range }) =>
+        editor
+          .chain()
+          .focus()
+          .deleteRange(range)
+          .insertContent({ type: "htmlRenderer", attrs: ex.attrs })
+          .run(),
+    })),
   ];
 }
 

@@ -986,6 +986,22 @@ textarea::-webkit-scrollbar-thumb {
 textarea::-webkit-scrollbar-track {
   background: transparent;
 }
+/* Change the color and thickness of the cursor line */
+.ProseMirror .ProseMirror-gapcursor:after {
+  border-top: 2px solid #3b82f6; /* Modern blue color, thicker line */
+  animation: ProseMirror-cursor-blink 1.2s steps(2, start) infinite; /* Slower blink */
+}
+
+/* Optional: Override the blinking animation if you want a smooth fade instead */
+@keyframes ProseMirror-cursor-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
 
 .editor-scroll {
   scrollbar-width: thin;
