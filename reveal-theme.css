@@ -1,19 +1,20 @@
 :root {
-  --r-background: #2b2b2b;
-  --r-background-color: #191919;
+  /* ECharts v6 dark theme — deep background variant (background #040810) */
+  --r-background: #080d1c;
+  --r-background-color: #040810;
   --r-main-font:
     -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui,
     helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial,
     sans-serif;
   --r-main-font-size: 42px;
-  --r-main-color: #f8f8f2;
+  --r-main-color: #eef1fa;
   --r-block-margin: 20px;
   --r-heading-margin: 0 0 20px 0;
   --r-heading-font:
     -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui,
     helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial,
     sans-serif;
-  --r-heading-color: #bd93f9;
+  --r-heading-color: #4992ff;
   --r-heading-line-height: 1.2;
   --r-heading-letter-spacing: normal;
   --r-heading-text-transform: none;
@@ -27,10 +28,10 @@
   --r-code-font:
     Fira Code, Menlo, Consolas, Monaco, Liberation Mono, Lucida Console,
     monospace;
-  --r-link-color: #ff79c6;
-  --r-link-color-dark: #ff41ae;
-  --r-link-color-hover: #8be9fd;
-  --r-selection-background-color: #44475a;
+  --r-link-color: #58d9f9;
+  --r-link-color-dark: #2f9cba;
+  --r-link-color-hover: #7cffb2;
+  --r-selection-background-color: #1c2333;
   --r-selection-color: #fff;
   --r-overlay-element-bg-color: 240, 240, 240;
   --r-overlay-element-fg-color: 0, 0, 0;
@@ -288,10 +289,10 @@ section.has-light-background h6 {
   color: #282a36;
 }
 :root {
-  --r-bold-color: #ffb86c;
-  --r-italic-color: #f1fa8c;
-  --r-inline-code-color: #50fa7b;
-  --r-list-bullet-color: #8be9fd;
+  --r-bold-color: #ff8a45;
+  --r-italic-color: #fddd60;
+  --r-inline-code-color: #05c091;
+  --r-list-bullet-color: #8d48e3;
 }
 .reveal strong,
 .reveal b {

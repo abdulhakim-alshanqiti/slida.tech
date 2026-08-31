@@ -1,31 +1,34 @@
 /* =========================================
-   ROOT VARIABLES (Dark Mode Palette)
+   ROOT VARIABLES (ECharts v6 Dark Theme Palette)
+   Source: apache/echarts theme/dark.js
+   backgroundColor #100C2A · contrastColor #B9B8CE
+   series color: #4992ff #7cffb2 #fddd60 #ff6e76 #58d9f9 #05c091 #ff8a45 #8d48e3
    ========================================= */
 :root {
   /* Core background & text */
-  --paper: #1a1a1f;
-  --paper-line: #383846;
-  --ink: #f2f0ea;
-  --ink-soft: #9099b8;
+  --paper: #080d1c;
+  --paper-line: #1c2333;
+  --ink: #eef1fa;
+  --ink-soft: #b9b8ce;
 
   /* Layout & borders */
-  --stage: #151318;
-  --stage-line: #322f3d;
+  --stage: #040810;
+  --stage-line: #2a3145;
 
-  /* Accents (refined violet — softer, richer than the original) */
-  --amber: #a78bfa;
-  --amber-dim: #a78bfaaa;
+  /* Accents (ECharts primary series blue) */
+  --amber: #4992ff;
+  --amber-dim: #4992ffaa;
 
-  /* Explicit component colors */
-  --bg-code: #242430;
-  --text-link: #f472b6;
-  --text-link-hover: #67e8f9;
-  --text-bold: #fbbf6d;
-  --text-italic: #e9e08a;
-  --text-code: #6ee7a0;
-  --text-bullet: #7dd3e8;
-  --color-error: #f87171;
-  --color-error-bg: #f8717122;
+  /* Explicit component colors (mapped from the ECharts v6 dark series palette) */
+  --bg-code: #0b1120;
+  --text-link: #58d9f9;
+  --text-link-hover: #7cffb2;
+  --text-bold: #ff8a45;
+  --text-italic: #fddd60;
+  --text-code: #05c091;
+  --text-bullet: #8d48e3;
+  --color-error: #ff6e76;
+  --color-error-bg: #ff6e7622;
 }
 
 /* =========================================
@@ -118,12 +121,12 @@ button:active {
 button.primary {
   background: var(--amber);
   border-color: var(--amber);
-  color: #191919;
+  color: #04070f;
   font-weight: 600;
 }
 
 button.primary:hover {
-  background: #c1adfc;
+  background: #7bb0ff;
 }
 
 .divider {
@@ -233,7 +236,7 @@ button.primary:hover {
 }
 
 .file-tab.is-active .file-tab-name {
-  color: #191919;
+  color: #04070f;
   font-weight: 600;
 }
 
@@ -254,7 +257,7 @@ button.primary:hover {
 }
 
 .file-tab.is-active .file-tab-close {
-  color: #191919;
+  color: #04070f;
 }
 
 .file-tab.is-active .file-tab-close:hover {
@@ -300,7 +303,7 @@ button.primary:hover {
 }
 .slash-menu-item.is-selected,
 .slash-menu-item:hover {
-  background: var(--accent, #2d6cdf);
+  background: var(--accent, #4992ff);
   color: #fff;
 }
 
@@ -626,7 +629,7 @@ button.primary:hover {
   outline: none;
   border-color: var(--amber);
   background: var(--bg-code);
-  box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.2);
+  box-shadow: 0 0 0 2px rgba(73, 146, 255, 0.2);
 }
 
 /* =========================================
@@ -644,7 +647,7 @@ iframe#deck {
   height: 100%;
   border: 1px solid var(--stage-line);
   border-radius: 8px;
-  background: #0d0c10;
+  background: #020509;
 }
 
 .dots {
@@ -743,7 +746,7 @@ iframe#deck {
   border: 0;
   outline: none;
   padding: 18px 20px;
-  background: #0f0e13;
+  background: #020509;
   color: var(--ink);
   font:
     13px/1.6 "Fira Code",

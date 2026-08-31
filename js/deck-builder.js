@@ -94,23 +94,6 @@ function directionOverrides(dir) {
     .lk-quiz-opt{ text-align:right; }
   `;
 }
-/*
-    .reveal ul ul, .reveal ul ol, .reveal ol ol, .reveal ol ul{
-      margin-right:40px !important; margin-left:0 !important;
-    }
-    .reveal li{ text-align:right !important; }
-    .reveal dd{ margin-right:40px; margin-left:0; }
-    .reveal blockquote{ text-align:right; }
-    .reveal table th, .reveal table td{ text-align:right; }
-    .reveal table th[align="left"], .reveal table td[align="left"]{ text-align:left; }
-    .reveal table th[align="center"], .reveal table td[align="center"]{ text-align:center; }
-
-    .reveal pre, .reveal code{ direction:ltr; text-align:left; }
-
-    .live-block{ direction:rtl; text-align:right; }
-    .live-label{ flex-direction:row-reverse; }
-    .lk-quiz-opt{ text-align:right; }
-*/
 
 export function deckDocument(
   markdownContent,
@@ -130,21 +113,21 @@ export function deckDocument(
   <style id="reveal-theme">${themeCss.replace(/<\/style/gi, "<\\/style")}</style>
   <style>
     /* ---- live code blocks ---- */
-    .live-block{ margin:20px 0; border:1px solid #3A3944; border-radius:10px; background:#1C1B22; overflow:hidden; text-align:left; }
-    .live-label{ display:flex; align-items:center; justify-content:space-between; padding:6px 12px; font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#E8A33D; background:#221F28; border-bottom:1px solid #3A3944; }
-    .live-rerun{ background:none; border:none; color:#8A8794; cursor:pointer; font-size:15px; line-height:1; padding:2px 7px; border-radius:4px; font-family:inherit; }
-    .live-rerun:hover{ color:#E8A33D; background:#2A2933; }
-    .live-stage{ padding:22px; min-height:50px; }
-    .live-error{ color:#E36B6B; font-family:'JetBrains Mono', monospace; font-size:13px; white-space:pre-wrap; }
+.live-block{ margin:20px 0; border:1px solid #2a3145; border-radius:10px; background:#040810 ; overflow:hidden; text-align:left; }
+.live-label{ display:flex; align-items:center; justify-content:space-between; padding:6px 12px; font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#ff8a45; background:#0b1120; border-bottom:1px solid #2a3145; }
+.live-rerun{ background:none; border:none; color:#b9b8ce; cursor:pointer; font-size:15px; line-height:1; padding:2px 7px; border-radius:4px; font-family:inherit; }
+.live-rerun:hover{ color:#ff8a45; background:#131a2c; }
+.live-stage{ padding:22px; min-height:50px; }
+.live-error{ color:#ff6e76; font-family:'JetBrains Mono', monospace; font-size:13px; white-space:pre-wrap; }
 
-    .lk-quiz-q{ font-size:20px; margin-bottom:14px; color:#F2F0EA; font-family:'Inter',sans-serif; line-height:1.4; }
-    .lk-quiz-options{ display:flex; flex-direction:column; gap:8px; }
-    .lk-quiz-opt{ text-align:left; padding:10px 14px; border-radius:6px; border:1px solid #3A3944; background:#26242C; color:#D9D6E0; cursor:pointer; font-family:'Inter',sans-serif; font-size:16px; transition:border-color .15s, background .15s; }
-    .lk-quiz-opt:hover:not(:disabled){ border-color:#E8A33D; }
-    .lk-quiz-opt:disabled{ cursor:default; opacity:.9; }
-    .lk-quiz-opt.lk-correct{ border-color:#7FBF7F; background:#22321F; color:#B9E6B5; }
-    .lk-quiz-opt.lk-incorrect{ border-color:#E36B6B; background:#332020; color:#F2B8B8; }
-    .lk-quiz-explain{ margin-top:12px; font-size:14px; color:#A8A5AF; font-style:italic; }
+.lk-quiz-q{ font-size:20px; margin-bottom:14px; color:#eef1fa; font-family:'Inter',sans-serif; line-height:1.4; }
+.lk-quiz-options{ display:flex; flex-direction:column; gap:8px; }
+.lk-quiz-opt{ text-align:left; padding:10px 14px; border-radius:6px; border:1px solid #2a3145; background:#0b1120; color:#b9b8ce; cursor:pointer; font-family:'Inter',sans-serif; font-size:16px; transition:border-color .15s, background .15s; }
+.lk-quiz-opt:hover:not(:disabled){ border-color:#ff8a45; }
+.lk-quiz-opt:disabled{ cursor:default; opacity:.9; }
+.lk-quiz-opt.lk-correct{ border-color:#7cffb2; background:#0f2419; color:#a9f5cb; }
+.lk-quiz-opt.lk-incorrect{ border-color:#ff6e76; background:#2a1416; color:#ffb3b8; }
+.lk-quiz-explain{ margin-top:12px; font-size:14px; color:#b9b8ce; font-style:italic; }
   </style>
   <style id="reveal-direction-overrides">${directionOverrides(dir)}</style>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Inter:wght@400;600&family=JetBrains+Mono&family=Noto+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet">
