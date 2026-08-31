@@ -13,6 +13,8 @@ export const HTMLRendererNode = Node.create({
   name: "htmlRenderer",
   group: "block",
   atom: true,
+  draggable: true,
+  selectable: true,
 
   addAttributes() {
     return {
@@ -235,6 +237,15 @@ container.appendChild(wrapper); `,
           };
         },
       },
+
+      collapsed: {
+        default: false,
+        parseHTML: (element) => element.getAttribute("data-collapsed") === "true",
+        renderHTML: (attributes) => {
+          if (attributes.collapsed) return { "data-collapsed": "true" };
+          return {};
+        },
+      },
     };
   },
 
@@ -246,6 +257,7 @@ container.appendChild(wrapper); `,
             configGenerator: node.attrs.configGenerator || "",
             renderView: node.attrs.renderView || "",
             state: node.attrs.state || {},
+            collapsed: !!node.attrs.collapsed,
           });
           state.write("```htmlrenderer\n");
           state.text(payload, false);
@@ -277,6 +289,9 @@ container.appendChild(wrapper); `,
                   "data-state",
                   JSON.stringify(data.state || {}),
                 );
+                if (data.collapsed) {
+                  div.setAttribute("data-collapsed", "true");
+                }
                 pre.replaceWith(div);
               });
           },
@@ -297,7 +312,8 @@ container.appendChild(wrapper); `,
           try {
             state = JSON.parse(element.getAttribute("data-state") || "{}");
           } catch (e) {}
-          return { configGenerator, renderView, state };
+          const collapsed = element.getAttribute("data-collapsed") === "true";
+          return { configGenerator, renderView, state, collapsed };
         },
       },
     ];
@@ -322,44 +338,6 @@ container.appendChild(wrapper); `,
       container.className = "tiptap-html-renderer-container";
       container.contentEditable = "false";
       container.style.color = "#eef1fa";
-
-      // --- EVENT BLOCKER ---
-      const isInteractive = (target) => {
-        if (!target || !target.tagName) return false;
-        if (
-          ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(target.tagName) ||
-          target.isContentEditable
-        ) {
-          return true;
-        }
-        if (target.closest && target.closest(".cm-editor")) return true;
-        return false;
-      };
-
-      const stopPropagationIfInteractive = (e) => {
-        if (isInteractive(e.target)) {
-          e.stopPropagation();
-        }
-      };
-
-      const eventsToBlock = [
-        "mousedown",
-        "mouseup",
-        "click",
-        "keydown",
-        "keyup",
-        "keypress",
-        "focusin",
-        "focusout",
-        "beforeinput",
-        "input",
-        "compositionstart",
-        "compositionend",
-      ];
-
-      eventsToBlock.forEach((eventType) => {
-        container.addEventListener(eventType, stopPropagationIfInteractive);
-      });
 
       // --- ROBUST ATTRIBUTE UPDATER ---
       const updateNodeAttributes = (newAttributes) => {
@@ -434,10 +412,209 @@ container.appendChild(wrapper); `,
         };
       };
 
-      // --- Tab Navigation ---
+      // --- HEADER BAR: drag handle + title + collapse ----------
+      const headerBar = document.createElement("div");
+      headerBar.className = "liveblock-header";
+      headerBar.contentEditable = "false";
+      headerBar.style.display = "flex";
+      headerBar.style.alignItems = "center";
+      headerBar.style.justifyContent = "space-between";
+      headerBar.style.gap = "8px";
+      headerBar.style.padding = "6px 8px";
+      headerBar.style.background = "#0b1120";
+      headerBar.style.borderBottom = "1px solid #2a3145";
+      headerBar.style.borderRadius = "6px 6px 0 0";
+      headerBar.style.userSelect = "none";
+
+      const leftGroup = document.createElement("div");
+      leftGroup.style.display = "flex";
+      leftGroup.style.alignItems = "center";
+      leftGroup.style.gap = "8px";
+
+      const dragHandle = document.createElement("button");
+      dragHandle.type = "button";
+      dragHandle.className = "liveblock-drag-handle";
+      dragHandle.title = "Drag to move \u2014 only this handle drags the block";
+      dragHandle.setAttribute("draggable", "true");
+      dragHandle.setAttribute("data-drag-handle", "");
+      dragHandle.draggable = true;
+      dragHandle.contentEditable = "false";
+      dragHandle.innerHTML = "&#9776;";
+      dragHandle.style.display = "inline-flex";
+      dragHandle.style.alignItems = "center";
+      dragHandle.style.justifyContent = "center";
+      dragHandle.style.width = "28px";
+      dragHandle.style.height = "28px";
+      dragHandle.style.padding = "0";
+      dragHandle.style.background = "transparent";
+      dragHandle.style.color = "#b9b8ce";
+      dragHandle.style.border = "1px solid #2a3145";
+      dragHandle.style.borderRadius = "4px";
+      dragHandle.style.cursor = "grab";
+      dragHandle.style.fontSize = "14px";
+      dragHandle.style.lineHeight = "1";
+      dragHandle.style.userSelect = "none";
+
+      dragHandle.addEventListener("mousedown", () => {
+        dragHandle.style.cursor = "grabbing";
+      });
+      dragHandle.addEventListener("mouseup", () => {
+        dragHandle.style.cursor = "grab";
+      });
+      dragHandle.addEventListener("mouseleave", () => {
+        dragHandle.style.cursor = "grab";
+      });
+
+      const title = document.createElement("span");
+      title.textContent = "\u25C6 Live Block";
+      title.style.fontSize = "11px";
+      title.style.letterSpacing = "0.06em";
+      title.style.textTransform = "uppercase";
+      title.style.color = "#4992ff";
+      title.style.fontWeight = "600";
+      title.style.userSelect = "none";
+
+      leftGroup.append(dragHandle, title);
+
+      const collapseBtn = document.createElement("button");
+      collapseBtn.type = "button";
+      collapseBtn.className = "liveblock-collapse-btn";
+      collapseBtn.contentEditable = "false";
+      collapseBtn.style.display = "inline-flex";
+      collapseBtn.style.alignItems = "center";
+      collapseBtn.style.gap = "4px";
+      collapseBtn.style.padding = "4px 10px";
+      collapseBtn.style.background = "#040810";
+      collapseBtn.style.color = "#eef1fa";
+      collapseBtn.style.border = "1px solid #2a3145";
+      collapseBtn.style.borderRadius = "4px";
+      collapseBtn.style.cursor = "pointer";
+      collapseBtn.style.fontSize = "12px";
+      collapseBtn.style.fontWeight = "500";
+      collapseBtn.style.userSelect = "none";
+
+      const headerCodeBtn = document.createElement("button");
+      headerCodeBtn.type = "button";
+      headerCodeBtn.className = "liveblock-code-btn";
+      headerCodeBtn.contentEditable = "false";
+      headerCodeBtn.textContent = "Code";
+      headerCodeBtn.title = "Open Code in fullscreen";
+      headerCodeBtn.style.display = "inline-flex";
+      headerCodeBtn.style.alignItems = "center";
+      headerCodeBtn.style.gap = "4px";
+      headerCodeBtn.style.padding = "4px 10px";
+      headerCodeBtn.style.background = "#0b1120";
+      headerCodeBtn.style.color = "#eef1fa";
+      headerCodeBtn.style.border = "1px solid #2a3145";
+      headerCodeBtn.style.borderRadius = "4px";
+      headerCodeBtn.style.cursor = "pointer";
+      headerCodeBtn.style.fontSize = "12px";
+      headerCodeBtn.style.fontWeight = "500";
+      headerCodeBtn.style.userSelect = "none";
+
+      const headerRightGroup = document.createElement("div");
+      headerRightGroup.style.display = "flex";
+      headerRightGroup.style.alignItems = "center";
+      headerRightGroup.style.gap = "6px";
+      headerRightGroup.append(collapseBtn, headerCodeBtn);
+
+      headerBar.append(leftGroup, headerRightGroup);
+      container.append(headerBar);
+
+      // --- EVENT BLOCKER (must be after header creation for drag-handle exception) ---
+      const isDragHandle = (target) =>
+        !!(target && target.closest && target.closest("[data-drag-handle]"));
+
+      const isInteractive = (target) => {
+        if (!target || !target.tagName) return false;
+        // drag handle should NOT be considered interactive for blocker – let ProseMirror handle drag
+        if (isDragHandle(target)) return false;
+        if (
+          ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(target.tagName) ||
+          target.isContentEditable
+        ) {
+          return true;
+        }
+        if (target.closest && target.closest(".cm-editor")) return true;
+        return false;
+      };
+
+      const stopPropagationIfInteractive = (e) => {
+        if (isInteractive(e.target)) {
+          e.stopPropagation();
+        }
+      };
+
+      const eventsToBlock = [
+        "mousedown",
+        "mouseup",
+        "click",
+        "keydown",
+        "keyup",
+        "keypress",
+        "focusin",
+        "focusout",
+        "beforeinput",
+        "input",
+        "compositionstart",
+        "compositionend",
+        "paste",
+        "cut",
+        "copy",
+        "drop",
+      ];
+
+      eventsToBlock.forEach((eventType) => {
+        container.addEventListener(eventType, stopPropagationIfInteractive);
+      });
+
+      // --- DRAG EXCLUSIVITY: only handle may initiate drag ---
+      container.addEventListener(
+        "dragstart",
+        (e) => {
+          const handle = e.target && e.target.closest
+            ? e.target.closest("[data-drag-handle]")
+            : null;
+          // drag must originate from handle inside this container
+          if (!handle || !container.contains(handle)) {
+            e.preventDefault();
+            e.stopPropagation();
+          } else {
+            // allow drag to bubble to ProseMirror editor; just add visual state
+            container.classList.add("is-dragging");
+            dragHandle.style.cursor = "grabbing";
+            // do NOT stopPropagation – ProseMirror needs the event
+          }
+        },
+        false,
+      );
+      container.addEventListener("dragend", () => {
+        container.classList.remove("is-dragging");
+        dragHandle.style.cursor = "grab";
+      });
+      // Also block native dragging on everything except handle by making container non-draggable
+      // ProseMirror adds draggable to the node view dom when spec.draggable=true; we override
+      // that by resetting after mount so only the handle is draggable. Guard above still catches stray drags.
+      // We keep container draggable false, handle true:
+      container.draggable = false;
+      container.addEventListener(
+        "mousedown",
+        (e) => {
+          // Ensure dragging via handle still selects the node (ProseMirror selects on mousedown)
+          // If we blocked mousedown on handle, selection wouldn't happen – already handled via isDragHandle exception.
+        },
+        true,
+      );
+
+      // Prevent dropping *into* the liveblock's container via ProseMirror handled elsewhere;
+      // but allow CodeMirror-internal drops (they are inside .cm-editor and stopped above if needed).
+      // No extra drop logic needed – paste/drop inside CodeMirror is already stopped above.
+
+
+      // --- Tab Navigation --- (hidden in non-fullscreen; code only via header fullscreen button)
       const tabNav = document.createElement("div");
       tabNav.className = "html-renderer-tabs";
-      tabNav.style.display = "flex";
+      tabNav.style.display = "none";
       tabNav.style.gap = "8px";
       tabNav.style.marginBottom = "16px";
       tabNav.style.borderBottom = "1px solid #2a3145";
@@ -494,42 +671,6 @@ container.appendChild(wrapper); `,
       };
 
       updateTabStyles();
-
-      const setActiveTab = (tab) => {
-        if (tab === "preview") {
-          const currentState = currentNode.attrs.state || {};
-          const prunedState = pruneState(
-            currentState,
-            currentNode.attrs.configGenerator,
-          );
-          if (JSON.stringify(prunedState) !== JSON.stringify(currentState)) {
-            updateNodeAttributes({ state: prunedState });
-          }
-
-          tabPreview.classList.add("active");
-          tabCode.classList.remove("active");
-          updateTabStyles();
-          leftPane.style.display = "block";
-          codeContainer.style.display = "none";
-          renderViewPane.style.display = "none"; // iframe is fullscreen-only (by default)
-          renderPreviewConfig(currentNode);
-        } else {
-          tabCode.classList.add("active");
-          tabPreview.classList.remove("active");
-          updateTabStyles();
-          leftPane.style.display = "none";
-          codeContainer.style.display = "block";
-
-          configGenEditor.setValue(currentNode.attrs.configGenerator);
-          renderViewEditor.setValue(currentNode.attrs.renderView);
-        }
-      };
-
-      tabPreview.addEventListener("click", () => setActiveTab("preview"));
-      tabCode.addEventListener("click", () => setActiveTab("code"));
-
-      tabNav.append(tabPreview, tabCode);
-      container.append(tabNav);
 
       // ==========================================
       // PREVIEW TAB: GENERATED BY CONFIG GENERATOR + RENDER VIEW IFRAME
@@ -721,10 +862,136 @@ container.appendChild(wrapper); `,
         }
       };
 
+      // Helpers to apply collapsed state (non-fullscreen)
+      // Non-fullscreen code section removed: preview only, code only in fullscreen via header Code button
+      const applyCollapsedVisual = (collapsed, forceTab) => {
+        if (isFullscreen) {
+          // in fullscreen collapsed is ignored – keep panes visible
+          return;
+        }
+        if (collapsed) {
+          tabNav.style.display = "none";
+          leftPane.style.display = "none";
+          codeContainer.style.display = "none";
+          container.classList.add("is-collapsed");
+          headerBar.style.borderBottom = "none";
+          headerBar.style.borderRadius = "6px";
+        } else {
+          container.classList.remove("is-collapsed");
+          headerBar.style.borderBottom = "1px solid #2a3145";
+          headerBar.style.borderRadius = "6px 6px 0 0";
+          // Normal (non-fullscreen) => preview only, code hidden (non-fullscreen code section removed)
+          tabNav.style.display = "none";
+          leftPane.style.display = "block";
+          codeContainer.style.display = "none";
+        }
+      };
+
+      const syncCollapseButton = (collapsed) => {
+        if (collapsed) {
+          collapseBtn.textContent = "\u25B8 Expand";
+          collapseBtn.title = "Expand live block";
+        } else {
+          collapseBtn.textContent = "\u25BE Collapse";
+          collapseBtn.title = "Collapse live block";
+        }
+      };
+
+      const setActiveTab = (tab) => {
+        if (currentNode.attrs.collapsed && !isFullscreen) {
+          // If collapsed, auto-expand when user tries to switch tabs
+          const nextCollapsed = false;
+          syncCollapseButton(nextCollapsed);
+          applyCollapsedVisual(nextCollapsed, tab);
+          updateNodeAttributes({ collapsed: nextCollapsed });
+        }
+        // Non-fullscreen code section removed: in normal mode we always show preview only.
+        // Code editors are only visible in fullscreen (via header Code button).
+        if (!isFullscreen) {
+          // Still maintain tab active state for update() logic, but force preview pane
+          if (tab === "preview") {
+            const currentState = currentNode.attrs.state || {};
+            const prunedState = pruneState(
+              currentState,
+              currentNode.attrs.configGenerator,
+            );
+            if (JSON.stringify(prunedState) !== JSON.stringify(currentState)) {
+              updateNodeAttributes({ state: prunedState });
+            }
+            tabPreview.classList.add("active");
+            tabCode.classList.remove("active");
+            updateTabStyles();
+            tabNav.style.display = "none";
+            leftPane.style.display = currentNode.attrs.collapsed ? "none" : "block";
+            codeContainer.style.display = "none";
+            renderViewPane.style.display = "none";
+            renderPreviewConfig(currentNode);
+          } else {
+            // Code tab requested in non-fullscreen: keep preview visible, but sync editors for later fullscreen
+            tabCode.classList.add("active");
+            tabPreview.classList.remove("active");
+            updateTabStyles();
+            // Keep preview visible; code stays hidden until fullscreen
+            tabNav.style.display = "none";
+            leftPane.style.display = currentNode.attrs.collapsed ? "none" : "block";
+            codeContainer.style.display = "none";
+            configGenEditor.setValue(currentNode.attrs.configGenerator);
+            renderViewEditor.setValue(currentNode.attrs.renderView);
+          }
+          return;
+        }
+        // Fullscreen: original tab toggling (though fullscreen shows both panes side-by-side, we keep for completeness)
+        if (tab === "preview") {
+          const currentState = currentNode.attrs.state || {};
+          const prunedState = pruneState(
+            currentState,
+            currentNode.attrs.configGenerator,
+          );
+          if (JSON.stringify(prunedState) !== JSON.stringify(currentState)) {
+            updateNodeAttributes({ state: prunedState });
+          }
+
+          tabPreview.classList.add("active");
+          tabCode.classList.remove("active");
+          updateTabStyles();
+          leftPane.style.display = "block";
+          codeContainer.style.display = "none";
+          renderViewPane.style.display = "none";
+          renderPreviewConfig(currentNode);
+        } else {
+          tabCode.classList.add("active");
+          tabPreview.classList.remove("active");
+          updateTabStyles();
+          leftPane.style.display = "none";
+          codeContainer.style.display = "block";
+          configGenEditor.setValue(currentNode.attrs.configGenerator);
+          renderViewEditor.setValue(currentNode.attrs.renderView);
+        }
+      };
+
+      tabPreview.addEventListener("click", () => setActiveTab("preview"));
+      tabCode.addEventListener("click", () => setActiveTab("code"));
+
+      // Collapse button handler
+      collapseBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const next = !currentNode.attrs.collapsed;
+        // optimistic visual
+        syncCollapseButton(next);
+        applyCollapsedVisual(next);
+        updateNodeAttributes({ collapsed: next });
+      });
+
+      // initial collapse sync
+      syncCollapseButton(!!currentNode.attrs.collapsed);
+
       const enterFullscreen = () => {
         isFullscreen = true;
         fullscreenBtn.textContent = "Exit Fullscreen (Esc)";
         container.classList.add("html-renderer-fullscreen");
+        // hide header for cleaner fullscreen; collapsed ignored
+        headerBar.style.display = "none";
         tabNav.style.display = "none";
 
         // Ensure both panes are visible side-by-side
@@ -822,8 +1089,9 @@ container.appendChild(wrapper); `,
         isFullscreen = false;
         fullscreenBtn.textContent = "Fullscreen";
         container.classList.remove("html-renderer-fullscreen");
-        tabNav.style.display = "";
-
+        // restore header
+        headerBar.style.display = "flex";
+        // tabNav and panes will be restored by collapsed logic below
         // Reset container styles
         [
           "position",
@@ -909,15 +1177,8 @@ container.appendChild(wrapper); `,
           ed.view.dom.style.height = "";
         });
 
-        // Restore tab-based visibility (on the wrapper now)
-        if (tabPreview.classList.contains("active")) {
-          leftPane.style.display = "block";
-          codeContainer.style.display = "none";
-        } else {
-          leftPane.style.display = "none";
-          codeContainer.style.display = "block";
-        }
-
+        // Restore collapsed / tab-based visibility
+        applyCollapsedVisual(!!currentNode.attrs.collapsed);
         document.removeEventListener("keydown", handleFullscreenKeydown, true);
       };
 
@@ -929,9 +1190,43 @@ container.appendChild(wrapper); `,
         }
       });
 
+      // Header Code button – next to Collapse, opens Code tab in fullscreen (old behaviour)
+      headerCodeBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // If collapsed, expand first
+        if (currentNode.attrs.collapsed) {
+          const nextCollapsed = false;
+          syncCollapseButton(nextCollapsed);
+          applyCollapsedVisual(nextCollapsed, "code");
+          updateNodeAttributes({ collapsed: nextCollapsed });
+        }
+        setActiveTab("code");
+        if (!isFullscreen) {
+          enterFullscreen();
+        }
+        // focus first code editor for quick editing
+        try {
+          setTimeout(() => {
+            try { configGenEditor.view.focus(); } catch {}
+          }, 50);
+        } catch {}
+      });
+
       codeContainer.append(fullscreenBtn, configGenGroup, renderViewGroup);
 
-      container.append(leftPane, codeContainer);
+      container.append(tabNav, leftPane, codeContainer);
+
+      // apply initial collapsed (after tabNav/leftPane/codeContainer in DOM)
+      // Default active is preview; non-fullscreen code section removed -> tabNav hidden
+      if (currentNode.attrs.collapsed) {
+        applyCollapsedVisual(true);
+      } else {
+        // ensure initial preview visibility (leftPane block, code hidden, tabs hidden)
+        tabNav.style.display = "none";
+        leftPane.style.display = "block";
+        codeContainer.style.display = "none";
+      }
 
       // --- Helper: Render Preview Config ---
       const renderPreviewConfig = (n) => {
@@ -1111,6 +1406,8 @@ container.appendChild(wrapper); `,
             currentNode.attrs.configGenerator;
           const renderViewChanged =
             updatedNode.attrs.renderView !== currentNode.attrs.renderView;
+          const collapsedChanged =
+            updatedNode.attrs.collapsed !== currentNode.attrs.collapsed;
 
           let newState = updatedNode.attrs.state || {};
           let needsStateUpdate = false;
@@ -1134,6 +1431,13 @@ container.appendChild(wrapper); `,
 
           if (needsStateUpdate) {
             updateNodeAttributes({ state: newState });
+          }
+
+          if (collapsedChanged) {
+            syncCollapseButton(!!updatedNode.attrs.collapsed);
+            if (!isFullscreen) {
+              applyCollapsedVisual(!!updatedNode.attrs.collapsed);
+            }
           }
 
           const activeEl = document.activeElement;
@@ -1163,7 +1467,9 @@ container.appendChild(wrapper); `,
           // text" which focuses a BUTTON) must still re-render immediately
           // even though previewContainer remains focused — otherwise the
           // config generator appears stale despite state having updated.
+          const isCollapsedNow = !!updatedNode.attrs.collapsed && !isFullscreen;
           const shouldUpdatePreview =
+            !isCollapsedNow &&
             (codeContainer.style.display === "none" || isFullscreen) &&
             (stateChanged || configGenChanged);
 
@@ -1173,7 +1479,8 @@ container.appendChild(wrapper); `,
             const handleBlur = () => {
               if (
                 !isDestroyed &&
-                (codeContainer.style.display === "none" || isFullscreen)
+                (codeContainer.style.display === "none" || isFullscreen) &&
+                !isCollapsedNow
               ) {
                 renderPreviewConfig(currentNode);
               }

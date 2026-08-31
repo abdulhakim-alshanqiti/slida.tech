@@ -1009,3 +1009,57 @@ textarea::-webkit-scrollbar-track {
 .editor-scroll::-webkit-scrollbar-thumb:hover {
   background: #4992ff; /* AMBER */
 }
+
+/* =========================================
+   LIVE BLOCK (htmlRenderer) – header / drag / collapse
+   ========================================= */
+.tiptap-html-renderer-container {
+  position: relative;
+}
+
+.tiptap-html-renderer-container.ProseMirror-selectednode {
+  outline: 2px solid #4992ff;
+  outline-offset: 1px;
+}
+
+.tiptap-html-renderer-container.is-dragging {
+  opacity: 0.6;
+}
+
+.tiptap-html-renderer-container.is-collapsed {
+  border-style: dashed;
+}
+
+.liveblock-header {
+  user-select: none;
+}
+
+.liveblock-drag-handle:hover {
+  border-color: #4992ff !important;
+  color: #4992ff !important;
+  background: #131a2c !important;
+}
+
+.liveblock-drag-handle:active {
+  cursor: grabbing !important;
+  background: #0b1120 !important;
+}
+
+.liveblock-collapse-btn:hover {
+  border-color: #4992ff !important;
+  color: #4992ff !important;
+}
+
+.liveblock-collapse-btn:active {
+  transform: translateY(1px);
+}
+
+.liveblock-code-btn:hover {
+  border-color: #4992ff !important;
+  color: #4992ff !important;
+  background: #131a2c !important;
+}
+
+.liveblock-code-btn:active {
+  transform: translateY(1px);
+}
