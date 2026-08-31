@@ -843,8 +843,7 @@ container.appendChild(wrapper); `
 
         const currentState = n.attrs.state || {}
 
-        // Debounced state update to prevent excessive re-renders and focus loss
-        const debouncedUpdateState = debounce((updates) => {
+        const immediateUpdateState = (updates) => {
           const pos = typeof getPos === 'function' ? getPos() : getPos
           const latestNode = editor.state.doc.nodeAt(pos)
           if (!latestNode) return
@@ -853,10 +852,77 @@ container.appendChild(wrapper); `
           const newState = { ...latestState, ...updates }
           
           updateNodeAttributes({ state: newState })
-        }, 300)
+        }
+
+        const debouncedUpdateState = debounce(immediateUpdateState, 300)
 
         const updateState = (updates) => {
-          debouncedUpdateState(updates)
+          // Structural changes (e.g. adding a new plain-text token) must
+          // re-render the config generator immediately — otherwise the UI
+          // looks stale even though `state` already contains the new entry
+          // (the previous `isPreviewFocused` guard also blocked the
+          // re-render while the "+ Add plain text" button retained focus).
+          let isStructural = false
+          const baseState = n.attrs.state || {}
+          for (const key in updates) {
+            const nextVal = updates[key]
+            const prevVal = baseState[key]
+            if (Array.isArray(nextVal) && Array.isArray(prevVal) && nextVal.length !== prevVal.length) {
+              isStructural = true
+              break
+            }
+            if (Array.isArray(nextVal) && !Array.isArray(prevVal)) {
+              isStructural = true
+              break
+            }
+            if (!(key in baseState)) {
+              isStructural = true
+              break
+            }
+            // Any change to `tokens` reshapes the config UI (e.g. switching
+            // a card between "plain" and "part" via the combobox must show
+            // or hide the Name/Formula/Explanation fields immediately).
+            if (key === 'tokens' && JSON.stringify(nextVal) !== JSON.stringify(prevVal)) {
+              isStructural = true
+              break
+            }
+          }
+          if (isStructural) {
+            // Correct stale closures for rapid array appends (e.g. double-
+            // clicking "+ Add plain text" before the first debounce/re-render
+            // completes). The handler's `tokens.slice()` is based on the
+            // snapshot captured at render time, so a second click would
+            // produce the same length array. Detect an "append to base"
+            // pattern and apply the suffix onto the *latest* state instead.
+            const pos = typeof getPos === 'function' ? getPos() : getPos
+            const latestNode = editor.state.doc.nodeAt(pos)
+            const latestState = latestNode ? (latestNode.attrs.state || {}) : baseState
+            const corrected = {}
+            for (const key in updates) {
+              const nextVal = updates[key]
+              const baseVal = baseState[key]
+              const latestVal = latestState[key]
+              if (Array.isArray(nextVal) && Array.isArray(baseVal) && Array.isArray(latestVal) && nextVal.length > baseVal.length) {
+                let isExtension = true
+                for (let i = 0; i < baseVal.length; i++) {
+                  if (JSON.stringify(baseVal[i]) !== JSON.stringify(nextVal[i])) {
+                    isExtension = false
+                    break
+                  }
+                }
+                if (isExtension) {
+                  const appended = nextVal.slice(baseVal.length)
+                  corrected[key] = [...latestVal, ...appended]
+                  continue
+                }
+              }
+              corrected[key] = nextVal
+            }
+            const newState = { ...latestState, ...corrected }
+            updateNodeAttributes({ state: newState })
+          } else {
+            debouncedUpdateState(updates)
+          }
         }
 
         try {
@@ -937,7 +1003,13 @@ container.appendChild(wrapper); `
               updateNodeAttributes({ state: newState });
           }
 
-          const isPreviewFocused = document.activeElement && previewContainer.contains(document.activeElement);
+          const activeEl = document.activeElement
+          const isPreviewFocused = activeEl && previewContainer.contains(activeEl);
+          const isTextEditingFocused = isPreviewFocused && (
+            activeEl.tagName === 'INPUT' ||
+            activeEl.tagName === 'TEXTAREA' ||
+            activeEl.isContentEditable
+          );
 
           // Update code editors if they are visible (normal code tab OR fullscreen)
           if (codeContainer.style.display !== 'none' || isFullscreen) {
@@ -949,11 +1021,23 @@ container.appendChild(wrapper); `
             }
           }
           
-          // Update preview if we are in preview mode OR in fullscreen, and it's not currently focused
+          // Update preview if we are in preview mode OR in fullscreen.
+          // While a text input is focused we defer the re-render until blur
+          // so typing does not lose caret. Button clicks (e.g. "+ Add plain
+          // text" which focuses a BUTTON) must still re-render immediately
+          // even though previewContainer remains focused — otherwise the
+          // config generator appears stale despite state having updated.
           const shouldUpdatePreview = (codeContainer.style.display === 'none' || isFullscreen) && (stateChanged || configGenChanged);
           
-          if (shouldUpdatePreview && !isPreviewFocused) {
+          if (shouldUpdatePreview && !isTextEditingFocused) {
             renderPreviewConfig(updatedNode)
+          } else if (shouldUpdatePreview && isTextEditingFocused) {
+            const handleBlur = () => {
+              if (!isDestroyed && (codeContainer.style.display === 'none' || isFullscreen)) {
+                renderPreviewConfig(currentNode)
+              }
+            }
+            activeEl.addEventListener('blur', handleBlur, { once: true })
           }
 
           // Keep the isolated render-view iframe in sync while fullscreen
