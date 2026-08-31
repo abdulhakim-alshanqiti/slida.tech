@@ -869,3 +869,143 @@ iframe#deck {
 [dir="rtl"] .theme-panel-title {
   text-align: right;
 }
+
+input {
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-size: 13px;
+  padding: 6px 8px;
+  background: #080d1c; /* PAPER */
+  color: #eef1fa; /* INK */
+  border: 1px solid #1c2333; /* PAPER_LINE */
+  border-radius: 6px;
+  outline: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+input::placeholder {
+  color: #b9b8ce; /* INK_SOFT */
+  opacity: 0.7;
+}
+
+input:hover {
+  border-color: #2a3145; /* STAGE_LINE */
+}
+
+input:focus {
+  border-color: #4992ff; /* AMBER */
+  box-shadow: 0 0 0 2px rgba(73, 146, 255, 0.2);
+}
+
+input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+input[type="color"] {
+  padding: 2px;
+  width: 56px;
+  height: 32px;
+  cursor: pointer;
+}
+
+/* range sliders */
+input[type="range"] {
+  accent-color: #4992ff; /* AMBER */
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* checkboxes / radios */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: #4992ff; /* AMBER */
+  width: auto;
+  padding: 0;
+}
+
+/* invalid state, matches ERROR/ERROR_BG */
+input:invalid {
+  border-color: #ff6e76;
+  background: #ff6e7622;
+}
+
+textarea {
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-size: 13px;
+  padding: 6px 8px;
+  background: #080d1c; /* PAPER */
+  color: #eef1fa; /* INK */
+  border: 1px solid #1c2333; /* PAPER_LINE */
+  border-radius: 6px;
+  outline: none;
+  resize: vertical;
+  line-height: 1.4;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+textarea::placeholder {
+  color: #b9b8ce; /* INK_SOFT */
+  opacity: 0.7;
+}
+
+textarea:hover {
+  border-color: #2a3145; /* STAGE_LINE */
+}
+
+textarea:focus {
+  border-color: #4992ff; /* AMBER */
+  box-shadow: 0 0 0 2px rgba(73, 146, 255, 0.2);
+}
+
+textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  resize: none;
+}
+
+textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background: #2a3145; /* STAGE_LINE */
+  border-radius: 4px;
+}
+
+textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.editor-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #2a3145 transparent; /* STAGE_LINE thumb, transparent track — Firefox */
+}
+
+.editor-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.editor-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.editor-scroll::-webkit-scrollbar-thumb {
+  background: #2a3145; /* STAGE_LINE */
+  border-radius: 4px;
+}
+
+.editor-scroll::-webkit-scrollbar-thumb:hover {
+  background: #4992ff; /* AMBER */
+}
