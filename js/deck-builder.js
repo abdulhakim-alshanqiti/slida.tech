@@ -214,33 +214,6 @@ export function deckDocument(
       }
     };
 
-    // Auto-resize any ECharts instances created inside live blocks.
-    // ECharts stamps a "_echarts_instance_" attribute on its container.
-    function resizeAllCharts(){
-      try{
-        if(typeof echarts !== 'undefined' && echarts.getInstanceByDom){
-          document.querySelectorAll('[_echarts_instance_]').forEach(function(el){
-            try{ var inst = echarts.getInstanceByDom(el); if(inst) inst.resize(); }catch(e){}
-          });
-        }
-      }catch(e){}
-      // Also try with ESM-imported echarts that may have registered differently:
-      // look for any element that has an echarts instance stored via the global registry fallback
-      try{
-        // Some builds expose getInstanceByDom on window.echarts as well
-        if(window.echarts && window.echarts.getInstanceByDom){
-          document.querySelectorAll('div').forEach(function(el){
-            try{
-              if(el.getAttribute('_echarts_instance_')){
-                var inst2 = window.echarts.getInstanceByDom(el);
-                if(inst2) inst2.resize();
-              }
-            }catch(e){}
-          });
-        }
-      }catch(e){}
-    }
-
     // Re-run Reveal layout so center:true vertical centering (top = (h - scrollHeight)/2)
     // is recomputed after live content expands. Without this, the slide keeps the top
     // computed for the tiny placeholder and live blocks appear to start from the centre then down.
@@ -250,13 +223,12 @@ export function deckDocument(
         if(window.deck && typeof deck.layout === 'function') deck.layout();
         else if(window.Reveal && typeof Reveal.layout === 'function') Reveal.layout();
       }catch(e){}
-      try{ resizeAllCharts(); }catch(e){}
     }
     function scheduleLayout(){
       if(_layoutPending) return;
       _layoutPending = true;
       // Run once immediately for instant correction, then again next frame to catch
-      // late DOM paints (images, fonts, ECharts). The flag prevents observer loops.
+      // late DOM paints (images, fonts). The flag prevents observer loops.
       try{ _doLayout(); }catch(e){}
       requestAnimationFrame(()=>{
         _layoutPending = false;
@@ -298,7 +270,7 @@ export function deckDocument(
   // Live blocks run as real ES modules (via a blob URL + dynamic import)
   // rather than new Function(...), so top-level import statements
   // inside 'source' are legal. Module top-level code can't receive
-  // function arguments, so container/LiveKit/d3/echarts are handed in
+  // function arguments, so container/LiveKit/d3 are handed in
   // by stashing them on window under a per-run key and re-declaring
   // them as top-level consts inside the generated module source.
   window.__lkCtx = window.__lkCtx || {};
@@ -306,8 +278,7 @@ export function deckDocument(
   window.__lkCtx[ctxKey] = {
     container: stage,
     LiveKit: window.LiveKit,
-    d3: window.d3,
-    echarts: window.echarts
+    d3: window.d3
   };
 
   const moduleSrc = [
@@ -315,7 +286,6 @@ export function deckDocument(
     'const container = __ctx.container;',
     'const LiveKit = __ctx.LiveKit;',
     'const d3 = __ctx.d3;',
-    'const echarts = __ctx.echarts;',
     source
   ].join(String.fromCharCode(10));
 
@@ -362,7 +332,7 @@ export function deckDocument(
     window.deck = deck;
     deck.initialize().then(()=>{
       activateLiveBlocks();
-      // Multiple passes catch async ESM imports (echarts, etc.) that expand later.
+      // Multiple passes catch async ESM imports that expand later.
       scheduleLayout();
       requestAnimationFrame(scheduleLayout);
       setTimeout(scheduleLayout, 80);
@@ -386,7 +356,6 @@ export function deckDocument(
         send();
         scheduleLayout();
         setTimeout(scheduleLayout, 50);
-        setTimeout(resizeAllCharts, 50);
         setTimeout(scheduleLayout, 200);
       });
       deck.on('fragmentshown', scheduleLayout);
