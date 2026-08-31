@@ -1063,3 +1063,25 @@ textarea::-webkit-scrollbar-track {
 .liveblock-code-btn:active {
   transform: translateY(1px);
 }
+
+.liveblock-title-input {
+  font-family: "Inter", sans-serif;
+  text-transform: none !important;
+  letter-spacing: 0.02em !important;
+}
+
+.liveblock-title-input::placeholder {
+  color: #b9b8ce;
+  opacity: 0.6;
+  text-transform: uppercase;
+}
+
+.liveblock-title-input:hover {
+  border-color: #2a3145 !important;
+}
+
+.liveblock-title-input:focus {
+  border-color: #4992ff !important;
+  background: #040810 !important;
+  box-shadow: 0 0 0 2px rgba(73, 146, 255, 0.15);
+}

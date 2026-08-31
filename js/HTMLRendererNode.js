@@ -220,6 +220,7 @@ container.appendChild(wrapper); `,
       // 3. Internal State Object (Free-form JSON object to support dynamic keys at runtime)
       state: {
         default: {
+          _liveblockname: "Live Block",
           question: "Which language runs natively in the browser?",
           options: ["Python", "JavaScript", "Rust", "Go"],
           myCustomKey: "Hello World",
@@ -392,6 +393,8 @@ container.appendChild(wrapper); `,
       // --- Helper: Prune state based on Config Generator ---
       const pruneState = (currentState, script) => {
         const managedKeys = extractManagedKeys(script);
+        // Keep live block name even if configGenerator doesn't reference it
+        managedKeys.add("_liveblockname");
         const pruned = {};
         for (const key in currentState) {
           if (managedKeys.has(key)) {
@@ -465,16 +468,61 @@ container.appendChild(wrapper); `,
         dragHandle.style.cursor = "grab";
       });
 
-      const title = document.createElement("span");
-      title.textContent = "\u25C6 Live Block";
-      title.style.fontSize = "11px";
-      title.style.letterSpacing = "0.06em";
-      title.style.textTransform = "uppercase";
-      title.style.color = "#4992ff";
-      title.style.fontWeight = "600";
-      title.style.userSelect = "none";
+      const diamond = document.createElement("span");
+      diamond.textContent = "\u25C6";
+      diamond.style.color = "#4992ff";
+      diamond.style.fontSize = "10px";
+      diamond.style.userSelect = "none";
+      diamond.style.flexShrink = "0";
 
-      leftGroup.append(dragHandle, title);
+      const titleInput = document.createElement("input");
+      titleInput.type = "text";
+      titleInput.className = "liveblock-title-input";
+      titleInput.value =
+        (currentNode.attrs.state && currentNode.attrs.state._liveblockname) ||
+        "Live Block";
+      titleInput.placeholder = "Live Block";
+      titleInput.title = "Click to edit block name";
+      titleInput.spellcheck = false;
+      titleInput.autocomplete = "off";
+      titleInput.style.background = "transparent";
+      titleInput.style.border = "1px solid transparent";
+      titleInput.style.borderRadius = "4px";
+      titleInput.style.padding = "2px 6px";
+      titleInput.style.color = "#eef1fa";
+      titleInput.style.fontSize = "11px";
+      titleInput.style.letterSpacing = "0.06em";
+      titleInput.style.textTransform = "uppercase";
+      titleInput.style.fontWeight = "600";
+      titleInput.style.width = "160px";
+      titleInput.style.minWidth = "90px";
+      titleInput.style.maxWidth = "220px";
+      titleInput.style.outline = "none";
+      titleInput.style.userSelect = "text";
+
+      const syncTitleBorder = (focused) => {
+        if (focused) {
+          titleInput.style.borderColor = "#4992ff";
+          titleInput.style.background = "#040810";
+        } else {
+          titleInput.style.borderColor = "transparent";
+          titleInput.style.background = "transparent";
+        }
+      };
+      titleInput.addEventListener("focus", () => syncTitleBorder(true));
+      titleInput.addEventListener("blur", () => syncTitleBorder(false));
+      titleInput.addEventListener("input", () => {
+        const newName = titleInput.value;
+        const pos = typeof getPos === "function" ? getPos() : getPos;
+        const latestNode = editor.state.doc.nodeAt(pos);
+        if (!latestNode) return;
+        const latestState = latestNode.attrs.state || {};
+        if (latestState._liveblockname === newName) return;
+        updateNodeAttributes({ state: { ...latestState, _liveblockname: newName } });
+      });
+      // allow paste inside title input – already handled by event blocker (INPUT is interactive so paste won't delete node)
+
+      leftGroup.append(dragHandle, diamond, titleInput);
 
       const collapseBtn = document.createElement("button");
       collapseBtn.type = "button";
@@ -1135,13 +1183,11 @@ container.appendChild(wrapper); `,
           previewContainer.style[prop] = "";
         });
 
-        // Hide + reset the render view iframe outside fullscreen
+        // Hide + reset the render view iframe outside fullscreen (keep hidden in normal view)
+        ["flexDirection", "flex", "minHeight", "marginTop"].forEach((prop) => {
+          renderViewPane.style[prop] = "";
+        });
         renderViewPane.style.display = "none";
-        ["display", "flexDirection", "flex", "minHeight", "marginTop"].forEach(
-          (prop) => {
-            renderViewPane.style[prop] = "";
-          },
-        );
         [
           "flex",
           "minHeight",
@@ -1439,6 +1485,14 @@ container.appendChild(wrapper); `,
               applyCollapsedVisual(!!updatedNode.attrs.collapsed);
             }
           }
+
+          // Keep header title input in sync with state._liveblockname (don't clobber while typing)
+          try {
+            const newTitle = (updatedNode.attrs.state && updatedNode.attrs.state._liveblockname) || "Live Block";
+            if (titleInput && titleInput.value !== newTitle && document.activeElement !== titleInput) {
+              titleInput.value = newTitle;
+            }
+          } catch {}
 
           const activeEl = document.activeElement;
           const isPreviewFocused =
