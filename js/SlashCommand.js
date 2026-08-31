@@ -6,6 +6,26 @@ import { liveblockExamples } from "./liveblockExamples.js";
 function getItems() {
   return [
     {
+      title: t("slashMenu.hslide"),
+      command: ({ editor, range }) =>
+        editor.chain().focus().deleteRange(range).setHorizontalRule().run(),
+    },
+    {
+      title: t("slashMenu.vslide"),
+      command: ({ editor, range }) =>
+        editor.chain().focus().deleteRange(range).insertContent("--").run(),
+    },
+    ...liveblockExamples.map((ex) => ({
+      title: ex.title,
+      command: ({ editor, range }) =>
+        editor
+          .chain()
+          .focus()
+          .deleteRange(range)
+          .insertContent({ type: "htmlRenderer", attrs: ex.attrs })
+          .run(),
+    })),
+    {
       title: t("slashMenu.h1"),
       command: ({ editor, range }) =>
         editor
@@ -45,56 +65,6 @@ function getItems() {
       command: ({ editor, range }) =>
         editor.chain().focus().deleteRange(range).toggleOrderedList().run(),
     },
-    {
-      title: t("slashMenu.blockquote"),
-      command: ({ editor, range }) =>
-        editor.chain().focus().deleteRange(range).toggleBlockquote().run(),
-    },
-    {
-      title: t("slashMenu.codeBlock"),
-      command: ({ editor, range }) =>
-        editor.chain().focus().deleteRange(range).setCodeBlock().run(),
-    },
-    {
-      title: t("slashMenu.liveBlock"),
-      command: ({ editor, range }) =>
-        editor
-          .chain()
-          .focus()
-          .deleteRange(range)
-          .setCodeBlock({ language: "live" })
-          .run(),
-    },
-    {
-      title: t("slashMenu.hslide"),
-      command: ({ editor, range }) =>
-        editor.chain().focus().deleteRange(range).setHorizontalRule().run(),
-    },
-    {
-      title: t("slashMenu.vslide"),
-      command: ({ editor, range }) =>
-        editor.chain().focus().deleteRange(range).insertContent("--").run(),
-    },
-    {
-      title: t("slashMenu.diagram"),
-      command: ({ editor, range }) =>
-        editor
-          .chain()
-          .focus()
-          .deleteRange(range)
-          .insertContent({ type: "htmlRenderer" })
-          .run(),
-    },
-    ...liveblockExamples.map((ex) => ({
-      title: ex.title,
-      command: ({ editor, range }) =>
-        editor
-          .chain()
-          .focus()
-          .deleteRange(range)
-          .insertContent({ type: "htmlRenderer", attrs: ex.attrs })
-          .run(),
-    })),
   ];
 }
 
