@@ -1,0 +1,100 @@
+{
+  "app": {
+    "title": "مانسكريبت — صانع شرائح ماركداون"
+  },
+  "brand": {
+    "sub": "ماركداون ← reveal.js"
+  },
+  "toolbar": {
+    "downloadMd": "↓ .md",
+    "downloadMdTitle": "تنزيل مصدر الماركداون",
+    "downloadHtml": "↓ .html",
+    "downloadHtmlTitle": "تنزيل عرض تقديمي مستقل",
+    "theme": "🎨 تنسيق العرض",
+    "themeTitle": "تعديل أو استبدال تنسيق Reveal.js",
+    "present": "▶ عرض",
+    "presentTitle": "عرض بملء الشاشة",
+    "lang": "🌐 English",
+    "langTitle": "التبديل إلى الإنجليزية"
+  },
+  "pane": {
+    "editor": "المحرر",
+    "preview": "المعاينة"
+  },
+  "status": {
+    "words": "{n} كلمة",
+    "slidePosition": "{current} / {total}"
+  },
+  "file": {
+    "new": "＋ ملف",
+    "newTitle": "ملف جديد",
+    "deleteTitle": "حذف الملف",
+    "untitled": "بدون عنوان {n}",
+    "renamePrompt": "إعادة تسمية الملف",
+    "deleteConfirm": "حذف \"{name}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+    "deleteLastAlert": "يحتاج مانسكريبت إلى ملف واحد على الأقل — أنشئ ملفًا آخر قبل حذف هذا الملف.",
+    "newSlideContent": "\n## شريحة جديدة\n\nابدأ الكتابة…\n"
+  },
+  "slashMenu": {
+    "h1": "ع1",
+    "h1Title": "عنوان 1",
+    "h2": "ع2",
+    "h2Title": "عنوان 2",
+    "h3": "ع3",
+    "h3Title": "عنوان 3",
+    "bold": "غ",
+    "boldTitle": "غامق (Ctrl+B)",
+    "italic": "م",
+    "italicTitle": "مائل (Ctrl+I)",
+    "strike": "خ",
+    "strikeTitle": "يتوسطه خط",
+    "code": "{ }",
+    "codeTitle": "كود مضمّن",
+    "bulletList": "• قائمة",
+    "bulletListTitle": "قائمة نقطية",
+    "orderedList": "1. قائمة",
+    "orderedListTitle": "قائمة مرقّمة",
+    "blockquote": "\" \"",
+    "blockquoteTitle": "اقتباس",
+    "link": "🔗",
+    "linkTitle": "رابط",
+    "linkPrompt": "رابط URL",
+    "hslide": "＋ شريحة",
+    "hslideTitle": "شريحة جديدة (فاصل أفقي)",
+    "vslide": "＋ شريحة فرعية",
+    "vslideTitle": "شريحة فرعية عمودية جديدة",
+    "quiz": "◆ اختبار",
+    "quizTitle": "إدراج كتلة اختبار تفاعلية",
+    "diagram": "◆ رسم بياني",
+    "diagramTitle": "إدراج كتلة رسم بياني تفاعلية",
+    "undo": "↺",
+    "undoTitle": "تراجع",
+    "redo": "↻",
+    "redoTitle": "إعادة"
+  },
+  "editor": {
+    "placeholder": "ابدأ كتابة عرضك التقديمي…",
+    "loadError": "فشل تحميل محرر النصوص المنسّقة — تحقق من اتصالك ثم أعد تحميل الصفحة."
+  },
+  "theme": {
+    "title": "تنسيق Reveal.js",
+    "subtitle": "عدّل الـ CSS مباشرة، أو استورد ملف .css آخر، أو صدّر تنسيقك الحالي.",
+    "import": "↑ استبدال CSS",
+    "importTitle": "استبدال التنسيق بملف CSS",
+    "download": "↓ حفظ CSS",
+    "downloadTitle": "تنزيل تنسيق CSS الحالي",
+    "reset": "إعادة تعيين",
+    "resetTitle": "استعادة التنسيق الافتراضي",
+    "close": "✕",
+    "closeTitle": "إغلاق محرر التنسيق",
+    "footHint": "تُطبَّق التغييرات تلقائيًا.",
+    "footShortcut": "Ctrl+S لتنزيل ملف CSS",
+    "statusEditing": "جارٍ التعديل… ستُحدَّث المعاينة قريبًا.",
+    "statusUpdated": "تم تحديث التنسيق — تم تحديث المعاينة.",
+    "statusReplaced": "تم الاستبدال بـ {name}",
+    "statusReadError": "تعذّرت قراءة ملف CSS هذا."
+  },
+  "misc": {
+    "slidePreviewTitle": "معاينة الشرائح"
+  }
+}

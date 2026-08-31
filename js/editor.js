@@ -1,9 +1,9 @@
-import { Editor } from "https://esm.sh/@tiptap/core@2.4.0";
-import StarterKit from "https://esm.sh/@tiptap/starter-kit@2.4.0";
-import Placeholder from "https://esm.sh/@tiptap/extension-placeholder@2.4.0";
-import CodeBlockLowlight from "https://esm.sh/@tiptap/extension-code-block-lowlight@2.4.0";
-import { createLowlight, common } from "https://esm.sh/lowlight@3.1.0";
-import { Markdown } from "https://esm.sh/tiptap-markdown@0.8.10";
+import { Editor } from "@tiptap/core";
+import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { createLowlight, common } from "lowlight";
+import { Markdown } from "tiptap-markdown";
 import { t, i18nReady, onChange as onLangChange } from "./i18n.js";
 import { HTMLRendererNode } from "./HTMLRendererNode.js";
 import SlashCommand from "./SlashCommand.js";

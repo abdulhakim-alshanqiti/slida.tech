@@ -1,5 +1,5 @@
-import { Extension } from "https://esm.sh/@tiptap/core";
-import Suggestion from "https://esm.sh/@tiptap/suggestion";
+import { Extension } from "@tiptap/core";
+import Suggestion from "@tiptap/suggestion";
 import { t } from "./i18n.js";
 import { liveblockExamples } from "./liveblockExamples.js";
 

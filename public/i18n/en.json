@@ -1,0 +1,91 @@
+{
+  "app": {
+    "title": "slida.tech — Markdown Slide Maker"
+  },
+  "brand": {
+    "sub": "markdown → reveal.js"
+  },
+  "toolbar": {
+    "downloadMd": "↓ .md",
+    "downloadMdTitle": "Download markdown source",
+    "downloadHtml": "↓ .html",
+    "downloadHtmlTitle": "Download standalone presentation",
+    "theme": "🎨 Theme CSS",
+    "themeTitle": "Edit or replace the Reveal.js theme CSS",
+    "present": "▶ Present",
+    "presentTitle": "Present fullscreen",
+    "lang": "🌐 العربية",
+    "langTitle": "Switch to Arabic"
+  },
+  "pane": {
+    "editor": "Editor",
+    "preview": "Preview"
+  },
+  "status": {
+    "words": "{n} words",
+    "slidePosition": "{current} / {total}"
+  },
+  "file": {
+    "new": "＋ File",
+    "newTitle": "New file",
+    "deleteTitle": "Delete file",
+    "untitled": "Untitled {n}",
+    "renamePrompt": "Rename file",
+    "deleteConfirm": "Delete \"{name}\"? This can't be undone.",
+    "deleteLastAlert": "slida.tech needs at least one file — create another before deleting this one.",
+    "newSlideContent": "\n## New slide\n\nStart writing…\n"
+  },
+  "slashMenu": {
+    "h1": "H1 (Heading 1)",
+    "h2": "H2 (Heading 2)",
+    "h3": "H3 (Heading 3)",
+    "bold": "B",
+    "italic": "I",
+    "italicTitle": "Italic (Ctrl+I)",
+    "strike": "S",
+    "strikeTitle": "Strikethrough",
+    "code": "{ }",
+    "codeTitle": "Inline code",
+    "bulletList": "• List",
+    "bulletListTitle": "Bullet list",
+    "orderedList": "1. List",
+    "orderedListTitle": "Numbered list",
+    "blockquote": "\" \"",
+    "blockquoteTitle": "Quote",
+    "link": "🔗",
+    "linkTitle": "Link",
+    "linkPrompt": "Link URL",
+    "hslide": "＋ Slide",
+    "hslideTitle": "New slide (horizontal rule)",
+    "vslide": "＋ Sub-slide",
+    "vslideTitle": "New vertical slide",
+    "codeBlock": "◆ Quiz",
+    "liveBlock": "◆ liveBlock",
+    "diagram": "◆ Diagram"
+  },
+  "editor": {
+    "placeholder": "Start typing your deck…",
+    "loadError": "Rich text editor failed to load — check your connection, then reload."
+  },
+  "theme": {
+    "title": "Reveal.js Theme CSS",
+    "subtitle": "Edit the CSS live, import another .css file, or export your current theme.",
+    "import": "↑ Replace CSS",
+    "importTitle": "Replace the theme with a CSS file",
+    "download": "↓ Save CSS",
+    "downloadTitle": "Download the current theme CSS",
+    "reset": "Reset",
+    "resetTitle": "Restore the default theme",
+    "close": "✕",
+    "closeTitle": "Close theme editor",
+    "footHint": "Changes apply automatically.",
+    "footShortcut": "Ctrl+S downloads the CSS",
+    "statusEditing": "Editing… preview will update shortly.",
+    "statusUpdated": "Theme updated — preview refreshed.",
+    "statusReplaced": "Replaced with {name}",
+    "statusReadError": "Could not read that CSS file."
+  },
+  "misc": {
+    "slidePreviewTitle": "Slide preview"
+  }
+}

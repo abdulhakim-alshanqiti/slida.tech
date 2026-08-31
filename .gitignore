@@ -1,2 +1,5 @@
 .aider*
 .wrangler
+node_modules/
+dist/
+.env
