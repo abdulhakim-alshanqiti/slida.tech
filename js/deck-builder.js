@@ -214,6 +214,59 @@ export function deckDocument(
       }
     };
 
+    // Auto-resize any ECharts instances created inside live blocks.
+    // ECharts stamps a "_echarts_instance_" attribute on its container.
+    function resizeAllCharts(){
+      try{
+        if(typeof echarts !== 'undefined' && echarts.getInstanceByDom){
+          document.querySelectorAll('[_echarts_instance_]').forEach(function(el){
+            try{ var inst = echarts.getInstanceByDom(el); if(inst) inst.resize(); }catch(e){}
+          });
+        }
+      }catch(e){}
+      // Also try with ESM-imported echarts that may have registered differently:
+      // look for any element that has an echarts instance stored via the global registry fallback
+      try{
+        // Some builds expose getInstanceByDom on window.echarts as well
+        if(window.echarts && window.echarts.getInstanceByDom){
+          document.querySelectorAll('div').forEach(function(el){
+            try{
+              if(el.getAttribute('_echarts_instance_')){
+                var inst2 = window.echarts.getInstanceByDom(el);
+                if(inst2) inst2.resize();
+              }
+            }catch(e){}
+          });
+        }
+      }catch(e){}
+    }
+
+    // Re-run Reveal layout so center:true vertical centering (top = (h - scrollHeight)/2)
+    // is recomputed after live content expands. Without this, the slide keeps the top
+    // computed for the tiny placeholder and live blocks appear to start from the centre then down.
+    let _layoutPending = false;
+    function _doLayout(){
+      try{
+        if(window.deck && typeof deck.layout === 'function') deck.layout();
+        else if(window.Reveal && typeof Reveal.layout === 'function') Reveal.layout();
+      }catch(e){}
+      try{ resizeAllCharts(); }catch(e){}
+    }
+    function scheduleLayout(){
+      if(_layoutPending) return;
+      _layoutPending = true;
+      // Run once immediately for instant correction, then again next frame to catch
+      // late DOM paints (images, fonts, ECharts). The flag prevents observer loops.
+      try{ _doLayout(); }catch(e){}
+      requestAnimationFrame(()=>{
+        _layoutPending = false;
+        try{ _doLayout(); }catch(e){}
+      });
+    }
+    function scheduleLayoutDeferred(delay){
+      setTimeout(scheduleLayout, delay);
+    }
+
     function activateLiveBlocks(){
       let sources = [];
       try{
@@ -254,7 +307,7 @@ export function deckDocument(
     container: stage,
     LiveKit: window.LiveKit,
     d3: window.d3,
-
+    echarts: window.echarts
   };
 
   const moduleSrc = [
@@ -262,6 +315,7 @@ export function deckDocument(
     'const container = __ctx.container;',
     'const LiveKit = __ctx.LiveKit;',
     'const d3 = __ctx.d3;',
+    'const echarts = __ctx.echarts;',
     source
   ].join(String.fromCharCode(10));
 
@@ -272,6 +326,11 @@ export function deckDocument(
     .then(()=>{
       delete window.__lkCtx[ctxKey];
       URL.revokeObjectURL(url);
+      // Live content rendered – slide height changed, re-center.
+      scheduleLayout();
+      requestAnimationFrame(scheduleLayout);
+      setTimeout(scheduleLayout, 60);
+      setTimeout(scheduleLayout, 250);
     })
     .catch((err)=>{
       stage.innerHTML = '';
@@ -281,11 +340,18 @@ export function deckDocument(
       stage.appendChild(e);
       delete window.__lkCtx[ctxKey];
       URL.revokeObjectURL(url);
+      scheduleLayout();
+      requestAnimationFrame(scheduleLayout);
+      setTimeout(scheduleLayout, 60);
     });
         }
         rerun.addEventListener('click', run);
         run();
       });
+      // Synchronous insertion already grew the slide – layout now.
+      scheduleLayout();
+      requestAnimationFrame(scheduleLayout);
+      setTimeout(scheduleLayout, 60);
     }
 
 
@@ -293,20 +359,43 @@ export function deckDocument(
       hash: false, controls:true, progress:true, center:true,
       plugins:[ RevealMarkdown, RevealHighlight ]
     });
+    window.deck = deck;
     deck.initialize().then(()=>{
       activateLiveBlocks();
+      // Multiple passes catch async ESM imports (echarts, etc.) that expand later.
+      scheduleLayout();
+      requestAnimationFrame(scheduleLayout);
+      setTimeout(scheduleLayout, 80);
+      setTimeout(scheduleLayout, 350);
+      setTimeout(scheduleLayout, 800);
+      // Watch for any future size mutations inside live blocks / slides.
+      try{
+        const ro = new ResizeObserver(()=>scheduleLayout());
+        document.querySelectorAll('.live-stage').forEach(el=>ro.observe(el));
+        document.querySelectorAll('.reveal .slides section').forEach(el=>ro.observe(el));
+        const mo = new MutationObserver(()=>scheduleLayout());
+        document.querySelectorAll('.live-stage').forEach(el=>mo.observe(el,{childList:true,subtree:true,attributes:true,characterData:true}));
+        // Also observe the whole slides container for new live blocks
+        mo.observe(document.querySelector('.reveal .slides'),{childList:true,subtree:true});
+      }catch(e){}
       const send = ()=>{
         const idx = deck.getIndices();
         parent.postMessage({ type:'state', total: deck.getTotalSlides(), h: idx.h, v: idx.v || 0 }, '*');
       };
       deck.on('slidechanged', ()=>{
         send();
+        scheduleLayout();
+        setTimeout(scheduleLayout, 50);
         setTimeout(resizeAllCharts, 50);
+        setTimeout(scheduleLayout, 200);
       });
+      deck.on('fragmentshown', scheduleLayout);
+      deck.on('fragmenthidden', scheduleLayout);
+      deck.on('ready', scheduleLayout);
       send();
       parent.postMessage({ type:'ready' }, '*');
     });
-    window.addEventListener('resize', resizeAllCharts);
+    window.addEventListener('resize', ()=>{ try{ scheduleLayout(); }catch(e){} });
     window.addEventListener('message', (e)=>{
       if(!e.data) return;
       if(e.data.type === 'goto'){

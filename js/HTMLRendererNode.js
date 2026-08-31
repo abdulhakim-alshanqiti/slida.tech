@@ -1,9 +1,9 @@
-import { Node, mergeAttributes } from 'https://esm.sh/@tiptap/core'
-import { basicSetup } from 'https://esm.sh/codemirror'
-import { EditorView, keymap } from 'https://esm.sh/@codemirror/view'
-import { EditorState } from 'https://esm.sh/@codemirror/state'
-import { javascript } from 'https://esm.sh/@codemirror/lang-javascript'
-import { indentWithTab } from 'https://esm.sh/@codemirror/commands'
+import { Node, mergeAttributes } from 'https://esm.sh/@tiptap/core@2.4.0'
+import { basicSetup } from 'https://esm.sh/codemirror@6.0.1?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/commands@6.7.1,@codemirror/language@6.10.1,@codemirror/autocomplete@6.8.0,@codemirror/lint@6.4.2,@codemirror/search@6.5.2'
+import { EditorView, keymap } from 'https://esm.sh/@codemirror/view@6.26.3?deps=@codemirror/state@6.4.1'
+import { EditorState } from 'https://esm.sh/@codemirror/state@6.4.1'
+import { javascript } from 'https://esm.sh/@codemirror/lang-javascript@6.2.2?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3,@codemirror/language@6.10.1'
+import { indentWithTab } from 'https://esm.sh/@codemirror/commands@6.7.1?deps=@codemirror/state@6.4.1,@codemirror/view@6.26.3'
 import { renderRenderView } from "./render-template.js";
 
 export const HTMLRendererNode = Node.create({
