@@ -198,6 +198,52 @@ document.getElementById("btn-html").addEventListener("click", () => {
   );
 });
 
+/* ---------- PDF export (vector print — same look as reveal.js) ---------- */
+
+let pdfStatusEl = null;
+function ensurePdfStatus() {
+  if (pdfStatusEl) return pdfStatusEl;
+  pdfStatusEl = document.createElement("div");
+  pdfStatusEl.className = "pdf-status";
+  pdfStatusEl.hidden = true;
+  pdfStatusEl.setAttribute("role", "status");
+  pdfStatusEl.setAttribute("aria-live", "polite");
+  document.body.appendChild(pdfStatusEl);
+  return pdfStatusEl;
+}
+function setPdfStatus(text, isError = false) {
+  const el = ensurePdfStatus();
+  el.textContent = text;
+  el.hidden = false;
+  el.style.borderColor = isError ? "var(--color-error)" : "var(--stage-line)";
+  el.style.color = isError ? "var(--color-error)" : "var(--ink)";
+}
+function clearPdfStatus(delay = 3000) {
+  const el = ensurePdfStatus();
+  setTimeout(() => {
+    el.hidden = true;
+  }, delay);
+}
+
+const pdfBtn = document.getElementById("btn-pdf");
+
+function doPdfPrint() {
+  try {
+    setPdfStatus(t("toolbar.downloadPdfPrintOpening") || "Opening print PDF…");
+    import("./pdf-export.js").then(({ exportPdfPrint }) => {
+      exportPdfPrint(currentMarkdown, theme.getCss(), isRtl() ? "rtl" : "ltr", getLang(), baseName());
+      setPdfStatus(t("toolbar.downloadPdfPrintOpened") || "Print PDF opened in new tab — choose Save as PDF.", false);
+      clearPdfStatus(6000);
+    });
+  } catch (err) {
+    setPdfStatus("Print PDF failed: " + (err && err.message ? err.message : String(err)), true);
+  }
+}
+
+if (pdfBtn) {
+  pdfBtn.addEventListener("click", () => doPdfPrint());
+}
+
 /* ---------- Autosave (persisted in IndexedDB, survives across sessions) ---------- */
 
 async function autosave() {
