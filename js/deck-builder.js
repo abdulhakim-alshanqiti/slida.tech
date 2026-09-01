@@ -310,6 +310,7 @@ export function deckDocument(
 
     const deck = new Reveal({
       hash: false, controls:true, progress:true, center:true,
+      rtl: ${lang === "ar" || dir === "rtl"},
       plugins:[ RevealMarkdown, RevealHighlight ]
     });
     window.deck = deck;
