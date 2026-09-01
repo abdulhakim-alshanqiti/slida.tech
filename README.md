@@ -239,9 +239,10 @@ slida.tech/
 │
 ├── index.html
 ├── live-diagram.js
-├── reveal-theme.css
-├── slides.md
-└── slides original.md
+├── public/
+│   ├── reveal-theme.css  # bundled theme + slides served by Vite
+│   └── slides.md
+└── vite.config.js
 ```
 
 The repository is currently organized as a client-side web application with the editor, application logic, localization, styling, Reveal.js theme, and presentation content separated into their respective files/directories.
