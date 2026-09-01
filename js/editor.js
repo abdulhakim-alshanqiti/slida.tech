@@ -1,9 +1,9 @@
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
+import { Placeholder } from "@tiptap/extensions";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { createLowlight, common } from "lowlight";
-import { Markdown } from "tiptap-markdown";
+import { Markdown } from "@tiptap/markdown";
 import { t, i18nReady, onChange as onLangChange } from "./i18n.js";
 import { HTMLRendererNode } from "./HTMLRendererNode.js";
 import SlashCommand from "./SlashCommand.js";
@@ -31,13 +31,14 @@ async function init() {
       CodeBlockLowlight.configure({ lowlight, defaultLanguage: "plaintext" }),
       HTMLRendererNode,
       Placeholder.configure({ placeholder: t("editor.placeholder") }),
-      Markdown.configure({ html: false, transformPastedText: true }),
+      Markdown,
       SlashCommand,
     ],
     content: initialMarkdown,
+    contentType: "markdown",
     autofocus: false,
     onUpdate({ editor }) {
-      window.onEditorMarkdownChange(editor.storage.markdown.getMarkdown());
+      window.onEditorMarkdownChange(editor.getMarkdown());
     },
   });
 
@@ -57,13 +58,13 @@ async function init() {
   window.slida_techEditor = editor;
   window.setEditorMarkdown = (markdown) => {
     try {
-      editor.commands.setContent(markdown || "", true);
+      editor.commands.setContent(markdown || "", { contentType: "markdown" });
     } catch (err) {
       console.error("Failed to load file into editor", err);
     }
   };
 
-  window.onEditorMarkdownChange(editor.storage.markdown.getMarkdown());
+  window.onEditorMarkdownChange(editor.getMarkdown());
 }
 
 init().catch((err) => {

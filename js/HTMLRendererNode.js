@@ -247,55 +247,34 @@ container.appendChild(wrapper); `,
     };
   },
 
-  addStorage() {
-    return {
-      markdown: {
-        serialize(state, node) {
-          const payload = JSON.stringify({
-            configGenerator: node.attrs.configGenerator || "",
-            renderView: node.attrs.renderView || "",
-            state: node.attrs.state || {},
-            collapsed: !!node.attrs.collapsed,
-          });
-          state.write("```htmlrenderer\n");
-          state.text(payload, false);
-          state.ensureNewLine();
-          state.write("```");
-          state.closeBlock(node);
-        },
-        parse: {
-          updateDOM(element) {
-            element
-              .querySelectorAll("code.language-htmlrenderer")
-              .forEach((code) => {
-                const pre = code.parentElement;
-                if (!pre) return;
-                let data = {};
-                try {
-                  data = JSON.parse(code.textContent || "{}");
-                } catch (e) {
-                  data = {};
-                }
-                const div = document.createElement("div");
-                div.setAttribute("data-type", "html-renderer");
-                div.setAttribute(
-                  "data-config-generator",
-                  data.configGenerator || "",
-                );
-                div.setAttribute("data-render-view", data.renderView || "");
-                div.setAttribute(
-                  "data-state",
-                  JSON.stringify(data.state || {}),
-                );
-                if (data.collapsed) {
-                  div.setAttribute("data-collapsed", "true");
-                }
-                pre.replaceWith(div);
-              });
-          },
-        },
-      },
-    };
+  priority: 101,
+
+  markdownTokenName: "code",
+
+  parseMarkdown(token, helpers) {
+    if (token.lang !== "htmlrenderer") return null;
+    let data = {};
+    try {
+      data = JSON.parse(token.text || "{}");
+    } catch (e) {
+      data = {};
+    }
+    return helpers.createNode("htmlRenderer", {
+      configGenerator: data.configGenerator || "",
+      renderView: data.renderView || "",
+      state: data.state || {},
+      collapsed: !!data.collapsed,
+    });
+  },
+
+  renderMarkdown(node) {
+    const payload = JSON.stringify({
+      configGenerator: node.attrs.configGenerator || "",
+      renderView: node.attrs.renderView || "",
+      state: node.attrs.state || {},
+      collapsed: !!node.attrs.collapsed,
+    });
+    return "```htmlrenderer\n" + payload + "\n```";
   },
 
   parseHTML() {
@@ -340,16 +319,15 @@ container.appendChild(wrapper); `,
       // --- ROBUST ATTRIBUTE UPDATER ---
       const updateNodeAttributes = (newAttributes) => {
         const pos = typeof getPos === "function" ? getPos() : getPos;
+        if (pos == null || pos === false || pos === -1) return;
         const latestNode = editor.state.doc.nodeAt(pos);
-
-        if (latestNode && pos !== false && pos !== -1) {
-          editor.view.dispatch(
-            editor.view.state.tr.setNodeMarkup(pos, undefined, {
-              ...latestNode.attrs,
-              ...newAttributes,
-            }),
-          );
-        }
+        if (!latestNode) return;
+        editor.view.dispatch(
+          editor.view.state.tr.setNodeMarkup(pos, undefined, {
+            ...latestNode.attrs,
+            ...newAttributes,
+          }),
+        );
       };
 
       // --- Helper: Extract keys managed by the Config Generator ---
@@ -511,6 +489,7 @@ container.appendChild(wrapper); `,
       titleInput.addEventListener("input", () => {
         const newName = titleInput.value;
         const pos = typeof getPos === "function" ? getPos() : getPos;
+        if (pos == null || pos === false || pos === -1) return;
         const latestNode = editor.state.doc.nodeAt(pos);
         if (!latestNode) return;
         const latestState = latestNode.attrs.state || {};
@@ -1282,6 +1261,7 @@ container.appendChild(wrapper); `,
 
         const immediateUpdateState = (updates) => {
           const pos = typeof getPos === "function" ? getPos() : getPos;
+          if (pos == null || pos === false || pos === -1) return;
           const latestNode = editor.state.doc.nodeAt(pos);
           if (!latestNode) return;
 
@@ -1339,6 +1319,11 @@ container.appendChild(wrapper); `,
             // produce the same length array. Detect an "append to base"
             // pattern and apply the suffix onto the *latest* state instead.
             const pos = typeof getPos === "function" ? getPos() : getPos;
+            if (pos == null || pos === false || pos === -1) {
+              const newState = { ...baseState, ...updates };
+              updateNodeAttributes({ state: newState });
+              return;
+            }
             const latestNode = editor.state.doc.nodeAt(pos);
             const latestState = latestNode
               ? latestNode.attrs.state || {}
