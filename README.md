@@ -241,7 +241,8 @@ slida.tech/
 ├── live-diagram.js
 ├── public/
 │   ├── reveal-theme.css  # bundled theme + slides served by Vite
-│   └── slides.md
+│   ├── liveblocks.md
+│   └── critical-thinking.md
 └── vite.config.js
 ```
 

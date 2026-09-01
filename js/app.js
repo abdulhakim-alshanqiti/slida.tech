@@ -19,7 +19,6 @@ import {
 
 const iframe = document.getElementById("deck");
 const dotsEl = document.getElementById("dots");
-const statusEditor = document.getElementById("status-editor");
 const statusPreview = document.getElementById("status-preview");
 const fileListEl = document.getElementById("file-list");
 const btnNewFile = document.getElementById("btn-new-file");
@@ -116,14 +115,8 @@ function updateDots() {
 
 let debounceTimer = null;
 
-function updateWordCount(text) {
-  const words = text.trim().split(/\s+/).filter(Boolean).length;
-  statusEditor.textContent = t("status.words", { n: words });
-}
-
 function onContentChange(newMarkdown) {
   currentMarkdown = fixSlideSeparators(newMarkdown);
-  updateWordCount(currentMarkdown);
   if (switchingFile) return; // this update came from loading a file, not editing
   clearTimeout(debounceTimer);
   debounceTimer = setTimeout(() => {
@@ -156,7 +149,6 @@ if (btnLang) {
 // (dynamic strings already rendered into the DOM, not just static labels) —
 // and rebuild the preview so its RTL/LTR alignment follows the new language.
 onLangChange(() => {
-  updateWordCount(currentMarkdown);
   updateDots();
   renderFileList();
   if (currentFileId) renderDeck(currentMarkdown);
@@ -231,12 +223,25 @@ function doPdfPrint() {
   try {
     setPdfStatus(t("toolbar.downloadPdfPrintOpening") || "Opening print PDF…");
     import("./pdf-export.js").then(({ exportPdfPrint }) => {
-      exportPdfPrint(currentMarkdown, theme.getCss(), isRtl() ? "rtl" : "ltr", getLang(), baseName());
-      setPdfStatus(t("toolbar.downloadPdfPrintOpened") || "Print PDF opened in new tab — choose Save as PDF.", false);
+      exportPdfPrint(
+        currentMarkdown,
+        theme.getCss(),
+        isRtl() ? "rtl" : "ltr",
+        getLang(),
+        baseName(),
+      );
+      setPdfStatus(
+        t("toolbar.downloadPdfPrintOpened") ||
+          "Print PDF opened in new tab — choose Save as PDF.",
+        false,
+      );
       clearPdfStatus(6000);
     });
   } catch (err) {
-    setPdfStatus("Print PDF failed: " + (err && err.message ? err.message : String(err)), true);
+    setPdfStatus(
+      "Print PDF failed: " + (err && err.message ? err.message : String(err)),
+      true,
+    );
   }
 }
 
@@ -312,7 +317,6 @@ async function switchToFile(id) {
 
   switchingFile = true;
   currentMarkdown = fixSlideSeparators(file.content || "");
-  updateWordCount(currentMarkdown);
   if (window.setEditorMarkdown) window.setEditorMarkdown(currentMarkdown);
   switchingFile = false;
 
@@ -396,8 +400,10 @@ async function migrateLegacyDoc() {
   return null;
 }
 
-async function loadBundledSlides() {
-  const response = await fetch("./slides.md", { cache: "no-store" });
+async function loadBundledMarkdown(path) {
+  const response = await fetch(path, { cache: "no-store" });
+  if (!response.ok)
+    throw new Error(`Failed to fetch ${path}: ${response.status}`);
   return await response.text();
 }
 
@@ -408,16 +414,50 @@ async function bootstrapFiles() {
 
   if (files.length === 0) {
     const legacy = await migrateLegacyDoc();
-    const content = legacy != null ? legacy : await loadBundledSlides();
-    const file = {
-      id: genId(),
-      name: legacy != null ? t("file.untitled", { n: 1 }) : "Welcome",
-      content,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
-    files = [file];
-    await filesPut(file);
+    if (legacy != null) {
+      const file = {
+        id: genId(),
+        name: t("file.untitled", { n: 1 }),
+        content: legacy,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      files = [file];
+      await filesPut(file);
+    } else {
+      let liveBlocksContent = "";
+      let criticalThinkingContent = "";
+      try {
+        liveBlocksContent = await loadBundledMarkdown("./liveblocks.md");
+      } catch (err) {
+        console.warn("Failed to load liveblocks.md", err);
+      }
+      try {
+        criticalThinkingContent = await loadBundledMarkdown(
+          "./critical-thinking.md",
+        );
+      } catch (err) {
+        console.warn("Failed to load critical-thinking.md", err);
+      }
+      const now = Date.now();
+      const fileCriticalThinking = {
+        id: genId(),
+        name: "Critical Thinking",
+        content: criticalThinkingContent,
+        createdAt: now,
+        updatedAt: now,
+      };
+      const fileLiveBlocks = {
+        id: genId(),
+        name: "Live Blocks",
+        content: liveBlocksContent,
+        createdAt: now + 1,
+        updatedAt: now + 1,
+      };
+      files = [fileCriticalThinking, fileLiveBlocks];
+      await filesPut(fileCriticalThinking);
+      await filesPut(fileLiveBlocks);
+    }
   }
 
   let lastId = null;
@@ -450,7 +490,7 @@ window.initialMarkdownPromise.then(async (val) => {
       /* fall back to the built-in default theme */
     }
   }
-  updateWordCount(currentMarkdown);
+
   renderDeck(currentMarkdown);
   renderFileList();
 });

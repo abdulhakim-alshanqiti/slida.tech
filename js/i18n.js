@@ -12,7 +12,7 @@
 const STORAGE_KEY = "slida.tech:lang";
 export const SUPPORTED_LANGS = ["en", "ar"];
 const RTL_LANGS = new Set(["ar"]);
-const FALLBACK_LANG = "en";
+const FALLBACK_LANG = "ar";
 
 let currentLang = FALLBACK_LANG;
 let dict = {};
@@ -26,10 +26,7 @@ function detectInitialLang() {
   } catch (err) {
     /* localStorage unavailable — ignore */
   }
-  const nav = (
-    (navigator.language || "en").split("-")[0] || "en"
-  ).toLowerCase();
-  return SUPPORTED_LANGS.includes(nav) ? nav : FALLBACK_LANG;
+  return FALLBACK_LANG;
 }
 
 async function loadDict(lang) {
