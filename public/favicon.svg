@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#040810"/>
+  <circle cx="256" cy="256" r="184" fill="#4992ff"/>
+  <g fill="white" transform="translate(256 256)">
+    <!-- 4-point star ✦ centered -->
+    <path d="M 0 -98 L 18 -18 L 98 0 L 18 18 L 0 98 L -18 18 L -98 0 L -18 -18 Z" />
+  </g>
+</svg>
