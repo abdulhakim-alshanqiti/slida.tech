@@ -427,10 +427,22 @@ async function bootstrapFiles() {
     } else {
       let liveBlocksContent = "";
       let criticalThinkingContent = "";
+      const liveblocksPath =
+        getLang() === "ar" ? "./liveblocks-ar.md" : "./liveblocks.md";
       try {
-        liveBlocksContent = await loadBundledMarkdown("./liveblocks.md");
+        liveBlocksContent = await loadBundledMarkdown(liveblocksPath);
       } catch (err) {
-        console.warn("Failed to load liveblocks.md", err);
+        console.warn(`Failed to load ${liveblocksPath}`, err);
+        // fallback to the other language file
+        const fallbackPath =
+          liveblocksPath === "./liveblocks-ar.md"
+            ? "./liveblocks.md"
+            : "./liveblocks-ar.md";
+        try {
+          liveBlocksContent = await loadBundledMarkdown(fallbackPath);
+        } catch (fallbackErr) {
+          console.warn(`Failed to load fallback ${fallbackPath}`, fallbackErr);
+        }
       }
       try {
         criticalThinkingContent = await loadBundledMarkdown(
